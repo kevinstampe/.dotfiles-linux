@@ -5,10 +5,16 @@
   "position": "top",
   "modules-left": ["hyprland/workspaces"],
   "modules-center": ["hyprland/window"],
-  "modules-right": ["network", "pulseaudio", "battery", "clock"],
+  "modules-right": ["memory", "temperature", "network", "pulseaudio", "battery", "clock"],
   "clock": {
-    "format": "<span foreground='#b16286'>   </span>{:%a %d.%m %H:%M}",
+    "format": "<span foreground='#b16286'>   </span>{:%Y.%m.%d %H:%M}",
     "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
+  },
+  "temperature": {
+    "format": "<span size='13000' foreground='#ff6666'> </span> {temperatureC}°C"
+  },
+  "memory": {
+    "format": "<span size='13000' foreground='#66ff66'>󰍛 </span> {used:0.1f}G/{total:0.1f}G"
   },
   "battery": {
     "states": {
@@ -26,15 +32,14 @@
     "tooltip-format": "{time}"
   },
   "network": {
-    "format-wifi": "<span size='13000' foreground='#d79921'>  </span>{essid}",
+    "format-wifi": "<span size='13000' foreground='#d79921'>  </span> {essid}",
     "format-ethernet": "<span size='13000' foreground='#d79921'>󰤭  </span> Disconnected",
     "format-linked": "{ifname} (No IP) ",
     "format-disconnected": "<span size='13000' foreground='#d79921'>  </span>Disconnected",
-    "tooltip-format-wifi": "Signal Strength: {signalStrength}%",
     "on-click": "nm-connection-editor"
   },
   "pulseaudio": {
-      "format": "{icon}  {volume}%",
+      "format": "<span size='13000' foreground='#458588'>{icon} </span> {volume}%",
       "format-muted": "",
       "format-icons": {
           "default": ["", "", " "]
