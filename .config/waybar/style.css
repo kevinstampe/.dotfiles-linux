@@ -9,8 +9,9 @@
 
 window#waybar {
     background: transparent;
-    background-color: @crust;
+    background-color: rgba(0,0,0,1);
     color: @overlay0;
+
     transition-property: background-color;
     transition-duration: 0.1s;
     border: 1px solid @overlay1;

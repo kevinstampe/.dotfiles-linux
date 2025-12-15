@@ -22,6 +22,7 @@ confirm-close-surface = false
 copy-on-select = true
 title = "ghostty"
 command = /usr/bin/zsh -l -i 
+background = black
 # Config syntax crash course
 # ==========================
 # # The config file consists of simple key-value pairs,

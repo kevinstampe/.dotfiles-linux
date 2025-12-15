@@ -8,10 +8,9 @@ local M = {}
 M.base46 = {
 	theme = "onedark",
 
-	-- hl_override = {
-	-- 	Comment = { italic = true },
-	-- 	["@comment"] = { italic = true },
-	-- },
+	hl_override = {
+    Normal = { bg = "#000000" },  -- Dark background for normal text
+	},
 }
 
 -- M.nvdash = { load_on_startup = true }
