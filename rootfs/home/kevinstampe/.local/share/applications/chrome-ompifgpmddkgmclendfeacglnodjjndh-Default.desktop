@@ -1,0 +1,10 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Version=1.0
+Terminal=false
+Type=Application
+Name=Microsoft Teams
+MimeType=x-scheme-handler/web+msteams;x-scheme-handler/chromium;
+Exec=chromium --profile-directory=Default --app-id=ompifgpmddkgmclendfeacglnodjjndh %U
+Icon=chrome-ompifgpmddkgmclendfeacglnodjjndh-Default
+StartupWMClass=crx_ompifgpmddkgmclendfeacglnodjjndh
