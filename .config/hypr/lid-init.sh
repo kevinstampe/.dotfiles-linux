@@ -11,9 +11,8 @@ echo "LID_STATE=$LID_STATE"
 
 if [[ "$LID_STATE" == "closed" ]]; then
     hyprctl keyword monitor "eDP-1, disable"
-    echo "test1"
+    hyprctl dispatch workspace 1
 else
     hyprctl keyword monitor "eDP-1, preferred, auto, 1.875"
-    echo "test2"
 fi
 
