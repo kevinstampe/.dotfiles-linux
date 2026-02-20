@@ -13,6 +13,6 @@ if [[ "$LID_STATE" == "closed" ]]; then
     hyprctl keyword monitor "eDP-1, disable"
     hyprctl dispatch workspace 1
 else
-    hyprctl keyword monitor "eDP-1, preferred, auto, 1.25"
+    hyprctl keyword monitor "eDP-1, preferred, 0x0, 1.25"
 fi
 
