@@ -37,13 +37,14 @@ neovim 0.11.6-1
 network-manager-applet 1.36.0-1
 networkmanager 1.54.3-1
 nwg-look 1.0.6-1
-otf-font-awesome 7.2.0-1
 pavucontrol 1:6.2-1
 pipewire 1:1.4.10-2
 pipewire-alsa 1:1.4.10-2
 pipewire-jack 1:1.4.10-2
 pipewire-pulse 1:1.4.10-2
 power-profiles-daemon 0.30-1
+qt5ct 1.9-1
+qt6ct 0.11-4
 rider 1:2025.3.2-1
 sof-firmware 2025.12.2-1
 stow 2.4.1-1
@@ -63,6 +64,7 @@ wireplumber 0.5.13-1
 wl-clip-persist 0.5.0-1
 wofi 1.5.3-1
 wpa_supplicant 2:2.11-5
+xdg-desktop-portal-gtk 1.15.3-1
 xdg-desktop-portal-hyprland 1.3.11-3
 xf86-video-amdgpu 25.0.0-1
 xwaylandvideobridge 0.4.0-3
