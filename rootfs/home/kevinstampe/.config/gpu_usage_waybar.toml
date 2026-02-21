@@ -1,0 +1,15 @@
+[text]
+format = "<span size='13000' foreground='#ff00ff'>󰘚 </span>{gpu_utilization}% - {mem_used:GiB.1}/{mem_total:GiB.1}G"
+
+[tooltip]
+format = """GPU: {gpu_utilization}%
+MEM USED: {mem_used:GiB.1}/{mem_total:GiB.1}G ({mem_utilization}%)
+DEC: {decoder_utilization}% 
+ENC: {encoder_utilization}%
+TEMP: {temperature:c}°C
+POWER: {power:w}W
+PSTATE: {p_state}
+PLEVEL: {p_level}
+FAN SPEED: {fan_speed}%
+TX: {tx:MiB.3} MiB/s
+RX: {rx:MiB.3} MiB/s"""
