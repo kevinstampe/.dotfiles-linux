@@ -1,5 +1,5 @@
 [text]
-format = "<span size='13000' foreground='#ff00ff'>󰘚 </span>{gpu_utilization}% - {mem_used:GiB.1}/{mem_total:GiB.1}G"
+format = "<span size='13000' foreground='#ff00ff'>󰘚 </span>{gpu_utilization}%/{temperature:c}°C - {mem_used:GiB.1}/{mem_total:GiB.1}G"
 
 [tooltip]
 format = """GPU: {gpu_utilization}%

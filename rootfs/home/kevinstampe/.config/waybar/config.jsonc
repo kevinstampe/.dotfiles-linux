@@ -5,11 +5,11 @@
   "modules-left": ["hyprland/workspaces"],
   "modules-center": ["hyprland/window"],
   "modules-right": ["cpu", "temperature", "memory", "custom/gpu-usage", "network", "pulseaudio", "battery", "clock"],
-  "clock": {
+ "clock": {
     "format": "<span foreground='#b16286'>   </span>{:%Y.%m.%d %H:%M}  ",
     "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
-  },
-  "temperature": {
+ },
+ "temperature": {
     "hwmon-path": "/sys/class/hwmon/hwmon6/temp1_input",
     "format": "{temperatureC}°C  ",
     "interval": 1
@@ -50,10 +50,11 @@
     "format-ethernet": "<span size='13000' foreground='#d79921'> </span>{ifname}  ",
     "format-linked": "<span size='13000' foreground='#d79921'></span>{ifname}  ",
     "format-disconnected": "<span size='13000' foreground='#d79921'> </span>{ifname}  ",
+    "max-length": 15,
     "on-click": "nm-connection-editor"
   },
   "pulseaudio": {
-      "format": "<span size='13000' foreground='#458588'>{icon}</span>  {volume}%  ",
+      "format": "  <span size='13000' foreground='#458588'>{icon}</span>  {volume}%  ",
       "format-muted": "",
       "format-icons": {
           "default": ["", "", " "]

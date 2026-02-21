@@ -17,7 +17,7 @@ cups 2:2.4.16-2
 cups-pk-helper 0.2.7-2
 decibels 49.0-1
 docker 1:29.2.1-1
-docker-compose 5.0.2-1
+docker-desktop 4.61.0-219004
 efibootmgr 18-3
 epiphany 49.2-1
 fastfetch 2.59.0-1
