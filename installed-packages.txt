@@ -22,6 +22,7 @@ epiphany 49.2-1
 fastfetch 2.59.0-1
 fzf 0.68.0-1
 gdm 49.2-1
+geekbench 6.5.0-1
 ghostty 1.2.3-3
 git 2.53.0-1
 gnome-backgrounds 49.0-1
@@ -66,6 +67,7 @@ gvfs-nfs 1.58.1-1
 gvfs-onedrive 1.58.1-1
 gvfs-smb 1.58.1-1
 gvfs-wsdd 1.58.1-1
+hdparm 9.65-3
 hyprgrass-meta 1.0-1
 hypridle 0.1.7-6
 hyprland 0.53.3-2
@@ -92,7 +94,7 @@ nvtop 3.3.2-1
 nwg-look 1.0.6-1
 obs-studio 32.0.4-1
 ollama-gui 0.1.0-1
-ollama-rocm 0.16.3-1
+ollama-rocm 0.17.0-1
 orca 49.5-2
 papers 49.4-1
 pavucontrol 1:6.2-1
@@ -111,6 +113,7 @@ rygel 1:45.1-1
 showtime 49.1-2
 simple-scan 49.1-1
 snapshot 49.1-1
+socat 1.8.1.1-1
 sof-firmware 2025.12.2-1
 steam 1.0.0.85-3
 stow 2.4.1-1
