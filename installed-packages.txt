@@ -104,7 +104,7 @@ power-profiles-daemon 0.30-1
 print-manager 1:6.6.0-1
 qt5ct 1.9-1
 qt6ct 0.11-4
-rider 1:2025.3.2-1
+rider 1:2025.3.3-1
 rog-control-center 6.3.2-0.1
 rogauracore-bin 1.6.2-1
 rygel 1:45.1-1
@@ -124,7 +124,7 @@ tidal-hifi-bin 6.1.0-1
 tmux 3.6_a-1
 ttf-adwaitamono-nerd 3.4.0-2
 ttf-jetbrains-mono-nerd 3.4.0-2
-ungoogled-chromium-bin 145.0.7632.75-2
+ungoogled-chromium-bin 145.0.7632.109-3
 visual-studio-code-bin 1.109.5-1
 waybar 0.15.0-1
 wev 1.1.0-1
