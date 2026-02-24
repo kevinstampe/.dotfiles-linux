@@ -132,6 +132,7 @@ return {
           razor = "razor",
           cshtml = "razor",
         },
+        pattern = { ["./hypr/.%.conf"] = "hyprlang" },
       })
     end,
   },
