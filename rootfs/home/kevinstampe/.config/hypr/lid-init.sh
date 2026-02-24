@@ -26,7 +26,7 @@ else
     else
         echo "Lid open: 1-12 to $EXTERNAL, 13 to $INTERNAL"
         # 1. Re-enable internal monitor
-        hyprctl keyword monitor "$INTERNAL, preferred, 0x0, 1.25"
+        hyprctl keyword monitor "$INTERNAL, preferred, 0x0, 1"
         
         # 2. Assign the rules (The "Contract")
         for i in {1..12}; do

@@ -1,10 +1,6 @@
 #!/usr/bin/env bash
 
 exec &>> /tmp/autoreload-waybar.log
-# start waybar if not started
-#if ! pgrep -x "waybar" > /dev/null; then
-	waybar &
-#fi
 
 # current checksums
 current_checksum_config=$(md5sum ~/.config/waybar/config.jsonc)

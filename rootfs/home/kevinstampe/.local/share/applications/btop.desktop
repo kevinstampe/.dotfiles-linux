@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=btop++
+GenericName=System Monitor
+Comment=Resource monitor that shows usage and stats
+Icon=btop
+# We set Terminal to false because we are manually calling ghostty
+Terminal=false
+Exec=ghostty --title="btop" -e btop
+Categories=System;Monitor;ConsoleOnly;
+Keywords=system;process;cpu;memory;
