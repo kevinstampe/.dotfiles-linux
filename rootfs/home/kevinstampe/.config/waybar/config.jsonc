@@ -4,19 +4,14 @@
   "position": "top",
   "modules-left": ["hyprland/workspaces"],
   "modules-center": ["hyprland/window"],
-  "modules-right": ["cpu", "temperature", "memory", "custom/gpu-usage", "network", "pulseaudio", "battery", "clock"],
+  "modules-right": ["cpu", "memory", "custom/gpu-usage", "network", "pulseaudio", "battery", "clock", "custom/power"],
  "clock": {
     "format": "<span foreground='#b16286'>   </span>{:%Y.%m.%d %H:%M}  ",
     "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>"
  },
- "temperature": {
-    "hwmon-path": "/sys/class/hwmon/hwmon6/temp1_input",
-    "format": "{temperatureC}°C  ",
-    "interval": 1
- },
  "cpu": {
 	"interval": 1,
-	"format": "<span size='13000' foreground='#6666ff'> </span>{usage}%/",
+	"format": "<span size='13000' foreground='#6666ff'> </span>{usage}% ",
 	"max-length": 10
   },
   "custom/gpu-usage": {
@@ -27,7 +22,7 @@
     "on-click": "ghostty -e nvtop"
   },
   "memory": {
-    "format": "<span size='13000' foreground='#66ff66'>󰍛 </span>{used:0.1f}/{total:0.1f}G  ",
+    "format": "<span size='13000' foreground='#66ff66'>󰍛 </span>{percentage}%  ",
     "interval": 1
   },
   "battery": {
@@ -60,5 +55,16 @@
           "default": ["", "", " "]
       },
       "on-click": "pavucontrol"
+  },
+  "custom/power": {
+    "format": " ",
+    "tooltip": false,
+    "menu": "on-click",
+    "menu-file": "/home/kevinstampe/.config/waybar/power-menu.xml",
+    "menu-actions": {
+      "shutdown": "systemctl poweroff",
+      "restart": "systemctl reboot",
+      "logoff": "hyprctl dispatch exit"
+    }
   }
 }
