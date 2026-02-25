@@ -14,6 +14,8 @@ bluez-utils 5.86-2
 brightnessctl 0.5.1-3
 btop 1.4.6-1
 btrfs-progs 6.19-1
+claude-code 2.1.56-1
+code 1.109.5-1
 conky 1.22.2-1
 coolercontrol-bin 3.1.1-1
 cups 2:2.4.16-2
@@ -23,6 +25,7 @@ docker 1:29.2.1-1
 efibootmgr 18-3
 epiphany 49.2-1
 fastfetch 2.59.0-1
+firefox 147.0.4-1
 fzf 0.68.0-1
 gdm 49.2-1
 geekbench 6.5.0-1
@@ -77,6 +80,7 @@ libpulse 17.0+r98+gb096704c0-1
 libreoffice-fresh 26.2.0-4
 linux 6.18.9.arch1-2
 linux-firmware 20260110-1
+lmstudio-bin 0.4.4-1
 loupe 49.2-1
 malcontent 0.13.1-1
 meson 1.10.1-1
@@ -85,11 +89,14 @@ nautilus 49.4-1
 neovim 0.11.6-1
 network-manager-applet 1.36.0-1
 networkmanager 1.54.3-1
+networkmanager-openvpn 1.12.5-1
 nvtop 3.3.2-1
 nwg-look 1.0.6-1
 obs-studio 32.0.4-1
+okteta 1:0.26.25-1
 ollama-gui 0.1.0-1
 ollama-rocm 0.17.0-1
+openvpn 2.7.0-1
 orca 49.5-2
 papers 49.4-1
 pavucontrol 1:6.2-1
@@ -112,7 +119,9 @@ snapshot 49.1-1
 socat 1.8.1.1-1
 sof-firmware 2025.12.2-1
 steam 1.0.0.85-3
+storageexplorer 1.41.1-1
 stow 2.4.1-1
+strace 6.19-1
 sudo 1.9.17.p2-2
 sushi 46.0-2
 swaync 0.12.4-1
@@ -124,7 +133,9 @@ tmux 3.6_a-1
 ttf-adwaitamono-nerd 3.4.0-2
 ttf-jetbrains-mono-nerd 3.4.0-2
 ungoogled-chromium-bin 145.0.7632.109-3
-visual-studio-code-bin 1.109.5-1
+virtualbox 7.2.6-1
+virtualbox-ext-oracle 7.2.6-1
+virtualbox-guest-iso 7.2.6-1
 waybar 0.15.0-1
 wev 1.1.0-1
 wget 1.25.0-3
@@ -135,6 +146,7 @@ wpa_supplicant 2:2.11-5
 xdg-desktop-portal-gnome 49.0-1
 xdg-desktop-portal-gtk 1.15.3-1
 xdg-desktop-portal-hyprland 1.3.11-3
+xdg-desktop-portal-wlr 0.8.1-1
 xdg-user-dirs-gtk 0.16-1
 xwaylandvideobridge 0.4.0-3
 yay 12.5.7-1

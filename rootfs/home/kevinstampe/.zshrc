@@ -189,3 +189,9 @@ export EDITOR='nvim'
 autoload -Uz compinit
 compinit
 # End of lines added by compinstall
+
+# Added by LM Studio CLI (lms)
+export PATH="$PATH:/home/kevinstampe/.lmstudio/bin"
+# End of LM Studio CLI section
+
+VBOX_USB=usbfs
