@@ -4,7 +4,11 @@
 # Path to your Oh My Zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 export DOTNET_ROOT=$HOME/.dotnet
-export PATH=$PATH:$DOTNET_ROOT:$DOTNET_ROOT/tools
+export NPM_BIN=$HOME/.npm_packages/bin
+export PATH=$PATH:$DOTNET_ROOT:$DOTNET_ROOT/tools:$NPM_BIN
+export SSL_CERT_DIR="$HOME/.aspnet/dev-certs/trust:/etc/ssl/certs"
+export FunctionAppHostPath="$HOME/.npm_packages/lib/node_modules/azure-functions-core-tools/bin/func.dll"
+export DotnetExecutablePath="$DOTNET_ROOT/dotnet"
 
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time Oh My Zsh is loaded, in which case,
