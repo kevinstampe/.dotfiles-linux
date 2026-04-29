@@ -1,9 +1,0 @@
-#!/usr/bin/env xdg-open
-[Desktop Entry]
-Version=1.0
-Terminal=false
-Type=Application
-Name=Onshape
-Exec=chromium --profile-directory=Default --app-id=abdafedkbpidcfbceknbjklbnfkghjop
-Icon=chrome-abdafedkbpidcfbceknbjklbnfkghjop-Default
-StartupWMClass=crx_abdafedkbpidcfbceknbjklbnfkghjop
