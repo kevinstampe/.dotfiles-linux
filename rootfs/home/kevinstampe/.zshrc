@@ -199,3 +199,6 @@ export PATH="$PATH:/home/kevinstampe/.lmstudio/bin"
 # End of LM Studio CLI section
 
 VBOX_USB=usbfs
+
+# opencode
+export PATH=/home/kevinstampe/.opencode/bin:$PATH
