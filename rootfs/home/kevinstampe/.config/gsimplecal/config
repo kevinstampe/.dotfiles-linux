@@ -1,0 +1,17 @@
+# gsimplecal config
+#
+# Danish calendar (Monday week-start + Danish month/day names) comes from
+# LC_TIME=da_DK.UTF-8, which the waybar clock on-click sets. Generate it first:
+#   sudo sed -i 's/^#da_DK.UTF-8/da_DK.UTF-8/' /etc/locale.gen && sudo locale-gen
+
+# 24h clock in the time section
+clock_format=%H:%M:%S
+
+# Show ISO week numbers in the calendar
+show_week_numbers=1
+
+# Touch-friendly: close when it loses focus
+close_on_unfocus=1
+
+# Keep the popup above other windows
+mainwindow_keep_above=1

@@ -1,6 +1,7 @@
 @import "mocha.css"; 
 
 * {
+    font-family: "JetBrainsMono Nerd Font", monospace;
     font-size: 16px;
     min-height: 0;
     font-weight: bold;
@@ -100,4 +101,50 @@ button:hover {
     border-radius: 15px;
     padding-left: 6px;
     padding-right: 6px;
+}
+
+#custom-keyboard {
+    margin-top: 4px;
+    margin-bottom: 4px;
+    margin-right: 10px;
+    padding-left: 6px;
+    padding-right: 6px;
+    font-size: 20px;
+}
+
+#custom-keyboard.active {
+    color: @green;
+}
+
+#custom-keyboard.inactive {
+    color: @overlay0;
+}
+
+#custom-wofi {
+    margin-left: 0px;
+    margin-right: 6px;
+    margin-top: 2px;
+    margin-bottom: 0px;
+    padding-left: 8px;
+    padding-right: 8px;
+    font-size: 13px;
+    color: @overlay1;
+}
+
+#custom-wofi:hover {
+    color: @orange;
+}
+
+#custom-close {
+    margin-top: 4px;
+    margin-bottom: 3px;
+    margin-left: 0px;
+    padding-left: 8px;
+    padding-right: 8px;
+    font-size: 11px;
+    color: @overlay0;
+}
+
+#custom-close:hover {
+    color: @mauve;
 }
