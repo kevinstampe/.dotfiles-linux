@@ -5,6 +5,12 @@
   "modules-left": ["custom/wofi", "hyprland/workspaces"],
   "modules-center": ["hyprland/window", "custom/close"],
   "modules-right": ["custom/cpu-ram", "custom/gpu-vram", "battery", "pulseaudio", "network", "clock", "custom/keyboard", "custom/power"],
+ "hyprland/window": {
+    "format": "{title}",
+    "max-length": 120,
+    "tooltip": true,
+    "tooltip-format": "{title}"
+ },
  "custom/close": {
     "format": "✕",
     "tooltip": false,
