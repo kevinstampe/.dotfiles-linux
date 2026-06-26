@@ -54,9 +54,9 @@
     "tooltip-format": "{time}"
   },
   "network": {
-    "format-wifi": "<span size='13000' foreground='#d79921'> </span>{essid} ",
+    "format-wifi": "<span size='13000' foreground='#d79921'>  </span>{essid} ",
     "format-ethernet": "<span size='13000' foreground='#d79921'> </span>{ifname} ",
-    "format-linked": "<span size='13000' foreground='#d79921'></span>{ifname} ",
+    "format-linked": "<span size='13000' foreground='#d79921'> </span>{ifname} ",
     "format-disconnected": "<span size='13000' foreground='#d79921'> </span>{ifname} ",
     "max-length": 25,
     "on-click": "nm-connection-editor"
