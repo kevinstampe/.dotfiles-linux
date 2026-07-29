@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Red Dead Redemption 2
+Comment=Play this game on Steam
+Exec=steam steam://rungameid/1174180
+Icon=steam_icon_1174180
+Terminal=false
+Type=Application
+Categories=Game;

@@ -1,0 +1,23 @@
+#!/bin/bash
+# greetd runs this instead of start-hyprland directly.
+# If the steam-mode flag exists, launch the full SteamOS-style gamescope session
+# (gamescope-session-plus), which provides the Big Picture UI with working
+# brightness slider, volume, power menu, and external-display preference.
+# Otherwise launch the normal Hyprland session.
+# When either exits, greetd respawns this chooser, giving a clean handoff.
+
+FLAG=/tmp/steam-mode
+
+if [ -f "$FLAG" ]; then
+    rm -f "$FLAG"
+    # Hyprland leaks WAYLAND_DISPLAY/DISPLAY into the systemd --user environment,
+    # which the gamescope-session-plus@.service inherits. That makes gamescope
+    # pick the nested wayland backend and crash ("Failed to connect to wayland
+    # socket"). Clear them and force the DRM backend so gamescope drives the
+    # display directly.
+    systemctl --user unset-environment WAYLAND_DISPLAY DISPLAY XAUTHORITY
+    systemctl --user set-environment BACKEND=drm
+    exec gamescope-session-plus steam
+fi
+
+exec start-hyprland

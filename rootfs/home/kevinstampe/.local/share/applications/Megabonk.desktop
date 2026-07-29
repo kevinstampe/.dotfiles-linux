@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Megabonk
+Comment=Play this game on Steam
+Exec=steam steam://rungameid/3405340
+Icon=steam
+Terminal=false
+Type=Application
+Categories=Game;

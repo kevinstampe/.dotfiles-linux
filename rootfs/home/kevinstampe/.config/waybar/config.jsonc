@@ -74,7 +74,7 @@
     "tooltip": false,
     "exec": "if [ -f \"${XDG_RUNTIME_DIR:-/tmp}/wvkbd.visible\" ]; then echo '{\"text\":\"󰌌\",\"class\":\"active\"}'; else echo '{\"text\":\"󰌌\",\"class\":\"inactive\"}'; fi",
     "return-type": "json",
-    "interval": 1,
+    "signal": 8,
     "on-click": "zsh ~/.config/hypr/osk-toggle.sh"
   },
   "custom/power": {

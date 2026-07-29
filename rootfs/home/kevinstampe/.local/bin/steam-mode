@@ -1,0 +1,9 @@
+#!/bin/bash
+# Hyprland keybind / ROG-button target: switch into Steam Gaming Mode.
+# Sets the flag then cleanly exits Hyprland; greetd respawns session-chooser
+# which launches the gamescope-session-plus Steam session.
+# (Resolution, refresh, external-display preference, volume and brightness are
+# all handled by the SteamOS session itself, so no detection is needed here.)
+
+touch /tmp/steam-mode
+hyprctl dispatch exit
