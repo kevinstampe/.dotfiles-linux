@@ -16,7 +16,9 @@ local hpZ40 = "desc:HP Inc. HP Z40c G3 CN434615R"
 
 hl.monitor({ output = aorus, mode = "3840x2160@240", position = "2560x-1800", scale = 1 })
 hl.monitor({ output = hpZ40, mode = "5120x2160@60",  position = "2560x-1800", scale = 1 })
-hl.monitor({ output = "eDP-1", mode = "2560x1600@180", position = "auto", scale = 1.6 })
+-- eDP-1 (laptop) placed to the LEFT of the external monitor.
+-- logical width = 2560/1.6 = 1600; external left edge = x2560, so x = 2560-1600 = 960
+hl.monitor({ output = "eDP-1", mode = "2560x1600@180", position = "960x0", scale = 1.6 })
 
 --------------------
 ---- WORKSPACES ----
@@ -54,18 +56,22 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("gtk-launch chrome-faolnafnngnfdaknnbpnkhgohbobgegn-Default.desktop", { workspace = "10 silent" })
     hl.exec_cmd("gtk-launch chrome-ompifgpmddkgmclendfeacglnodjjndh-Default.desktop", { workspace = "11 silent" })
 
-    hl.exec_cmd("waybar")
+    hl.exec_cmd("~/.config/hypr/waybar-launch.sh")
     hl.exec_cmd("~/.config/hypr/autoreload-waybar.sh")
-    hl.exec_cmd("~/.config/hypr/monitor-event.sh")
 
     hl.exec_cmd("$HOME/.local/lib/import_env tmux")
     hl.exec_cmd("$HOME/.local/lib/import_env system")
 end)
 
 -- Runs on every config load/reload (like the old exec)
-hl.exec_cmd("killall btop; ghostty --class=btop --font-size=10 -e btop", { workspace = "13 silent" })
+hl.exec_cmd("killall btop; ghostty --class=btop --font-size=16 -e btop", { workspace = "13 silent" })
 hl.exec_cmd("~/.config/hypr/lid-init.sh")
 hl.exec_cmd("pacman -Qe > ~/dotfiles/installed-packages.txt")
+
+-- React to monitor hotplug natively (replaces socat monitor-event.sh, which needs socat).
+-- lid-init.sh reassigns workspaces per monitor and re-evaluates waybar output.
+hl.on("monitor.added",   function() hl.exec_cmd("~/.config/hypr/lid-init.sh") end)
+hl.on("monitor.removed", function() hl.exec_cmd("~/.config/hypr/lid-init.sh") end)
 
 -------------------------------
 ---- ENVIRONMENT VARIABLES ----
