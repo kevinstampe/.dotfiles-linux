@@ -24,7 +24,7 @@ for _ in $(seq 1 200); do
     if [[ -n "$WW" && "$WW" != "null" ]]; then
         X=$(( MX + MW - WW - MARGIN ))
         Y=$(( MY + BAR ))
-        hyprctl dispatch movewindowpixel "exact ${X} ${Y},class:gsimplecal" >/dev/null
+        hyprctl dispatch "hl.dsp.window.move({ x = ${X}, y = ${Y} })" >/dev/null
         break
     fi
     sleep 0.01

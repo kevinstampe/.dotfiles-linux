@@ -14,7 +14,7 @@
  "custom/close": {
     "format": "✕",
     "tooltip": false,
-    "on-click": "hyprctl dispatch killactive"
+    "on-click": "hyprctl dispatch 'hl.dsp.window.close()'"
  },
  "custom/wofi": {
     "format": " ●",
@@ -85,7 +85,7 @@
     "menu-actions": {
       "shutdown": "systemctl poweroff",
       "restart": "systemctl reboot",
-      "logoff": "hyprctl dispatch exit"
+      "logoff": "hyprctl dispatch 'hl.dsp.exit()'"
     }
   }
 }
