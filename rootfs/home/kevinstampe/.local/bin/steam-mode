@@ -6,4 +6,4 @@
 # all handled by the SteamOS session itself, so no detection is needed here.)
 
 touch /tmp/steam-mode
-hyprctl dispatch exit
+hyprctl dispatch 'hl.dsp.exit()'
