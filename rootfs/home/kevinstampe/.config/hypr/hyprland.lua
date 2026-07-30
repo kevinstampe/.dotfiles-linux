@@ -46,6 +46,8 @@ local menu        = "wofi -S drun -i"
 -- See https://wiki.hypr.land/Configuring/Basics/Autostart/
 -- hyprland.start fires once at startup (like the old exec-once)
 
+local btop_cmd = "~/.config/hypr/btop-launch.sh"
+
 hl.on("hyprland.start", function()
     hl.exec_cmd("hypridle & hyprpaper & hyprlock")
     hl.exec_cmd("wl-clip-persist --clipboard regular")
@@ -61,14 +63,15 @@ hl.on("hyprland.start", function()
 
     hl.exec_cmd("$HOME/.local/lib/import_env tmux")
     hl.exec_cmd("$HOME/.local/lib/import_env system")
+    hl.exec_cmd(btop_cmd, { workspace = "13 silent" })
+    hl.exec_cmd("~/.config/hypr/lid-init.sh")
 end)
 
--- Runs on every config load/reload (like the old exec)
-hl.exec_cmd("killall btop; ghostty --class=btop --font-size=16 -e btop", { workspace = "13 silent" })
 hl.exec_cmd("~/.config/hypr/lid-init.sh")
 hl.exec_cmd("pacman -Qe > ~/dotfiles/installed-packages.txt")
+hl.exec_cmd(btop_cmd, { workspace = "13 silent" })
 
--- React to monitor hotplug natively (replaces socat monitor-event.sh, which needs socat).
+-- React to monitor hotplug natively.
 -- lid-init.sh reassigns workspaces per monitor and re-evaluates waybar output.
 hl.on("monitor.added",   function() hl.exec_cmd("~/.config/hypr/lid-init.sh") end)
 hl.on("monitor.removed", function() hl.exec_cmd("~/.config/hypr/lid-init.sh") end)
@@ -251,9 +254,9 @@ hl.bind("XF86Launch3", hl.dsp.exec_cmd("~/.local/bin/steam-hold"), { locked = tr
 
 hl.bind(ctrl .. " + " .. secMod .. " + Q", hl.dsp.exec_cmd("hyprlock"))
 
-hl.bind("PRINT", hl.dsp.exec_cmd("hyprshot -m output"))
-hl.bind(mainMod .. " + PRINT", hl.dsp.exec_cmd("hyprshot -m active"))
-hl.bind(mainMod .. " + SHIFT + PRINT", hl.dsp.exec_cmd("hyprshot -m region"))
+hl.bind("PRINT", hl.dsp.exec_cmd("hyprshot -m output --raw | swappy -f -"))
+hl.bind(mainMod .. " + PRINT", hl.dsp.exec_cmd("hyprshot -m active --raw | swappy -f -"))
+hl.bind(mainMod .. " + SHIFT + PRINT", hl.dsp.exec_cmd("hyprshot -m region --raw | swappy -f -"))
 hl.bind(mainMod .. " + SHIFT + slash", hl.dsp.layout("togglesplit"))
 
 -- toggle on-screen keyboard (wvkbd)
@@ -390,6 +393,17 @@ hl.window_rule({
     name  = "calculator-float",
     match = { class = "^(org.gnome.Calculator)$" },
     float = true,
+})
+
+-- pinentry (wifi password prompt from networkmanager_dmenu): float + center,
+-- otherwise it gets tiled full-size. GTK2 build runs under xwayland, and the
+-- WM_CLASS it reports varies by build (pinentry / pinentry-gtk-2), so match loose.
+hl.window_rule({
+    name  = "pinentry-float",
+    match = { class = "^([Pp]inentry.*)$" },
+    float  = true,
+    center = true,
+    size   = "400 200",
 })
 
 -- gsimplecal: float, no anim (calendar-toggle.sh moves it to the top-right)

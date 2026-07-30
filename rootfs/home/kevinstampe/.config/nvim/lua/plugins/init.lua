@@ -33,12 +33,21 @@ return {
     },
   },
   {
-    "williamboman/mason.nvim",
+    "mason-org/mason.nvim",
     opts = {
       registries = {
         "github:mason-org/mason-registry",
         "github:Crashdummyy/mason-registry",
       },
+    },
+  },
+  {
+    -- mason.nvim itself has no `ensure_installed`, this plugin provides it
+    "WhoIsSethDaniel/mason-tool-installer.nvim",
+    dependencies = { "mason-org/mason.nvim" },
+    lazy = false,
+    opts = {
+      run_on_start = true,
       ensure_installed = {
         "lua-language-server",
 
@@ -57,7 +66,7 @@ return {
 
         -- !
         "roslyn",
-        "rzls",
+        -- "rzls", -- not in any enabled registry right now
         -- "csharp-language-server",
         -- "omnisharp",
       },
