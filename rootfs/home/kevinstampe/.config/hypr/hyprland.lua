@@ -268,6 +268,9 @@ hl.bind(mainMod .. " + SHIFT + slash", hl.dsp.layout("togglesplit"))
 -- toggle on-screen keyboard (wvkbd)
 hl.bind(mainMod .. " + O", hl.dsp.exec_cmd("zsh ~/.config/hypr/osk-toggle.sh"))
 
+-- toggle the Azure VPN tunnel (WireGuard -> Windows gateway VM)
+hl.bind(mainMod .. " + V", hl.dsp.exec_cmd("~/.local/bin/azvpn toggle"))
+
 -- Move focus
 hl.bind(mainMod .. " + H", hl.dsp.focus({ direction = "left" }))
 hl.bind(mainMod .. " + L", hl.dsp.focus({ direction = "right" }))

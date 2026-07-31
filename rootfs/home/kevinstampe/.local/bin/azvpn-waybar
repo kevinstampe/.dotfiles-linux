@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+# azvpn-waybar - waybar status for the Azure gateway tunnel
+#
+# Emits JSON. Runs unprivileged: interface presence comes from /sys, and
+# reachability from a ping. Nothing here needs sudo, so waybar can poll it.
+#
+# Styling matches the other modules: icon coloured inline via pango, label
+# left to inherit the module colour (white) from style.css.
+
+set -uo pipefail
+
+KNOWN_IFACES=(az az-remote)
+PROBE_HOST="10.142.84.132"   # Azure private resolver, only reachable via tunnel
+ICON="<span size='13000' foreground='#cc241d'>󰖂 </span>"
+
+iface=""
+for i in "${KNOWN_IFACES[@]}"; do
+    if [[ -d "/sys/class/net/$i" ]]; then iface="$i"; break; fi
+done
+
+if [[ -z "$iface" ]]; then
+    printf '{"text":"%soff","class":"disconnected","tooltip":"Azure VPN: down"}\n' "$ICON"
+    exit 0
+fi
+
+if ping -c1 -W1 "$PROBE_HOST" &>/dev/null; then
+    printf '{"text":"%s%s","class":"connected","tooltip":"Azure VPN: connected via %s"}\n' "$ICON" "$iface" "$iface"
+else
+    printf '{"text":"%s%s!","class":"degraded","tooltip":"Azure VPN: tunnel up (%s) but Azure unreachable\\nCheck the gateway VM: Azure client connected? Session may need re-auth (MFA)."}\n' "$ICON" "$iface" "$iface"
+fi

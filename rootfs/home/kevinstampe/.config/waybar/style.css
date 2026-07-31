@@ -98,10 +98,11 @@ button:hover {
 }
 
 #custom-vpn {
-    color: @lavender;
     border-radius: 15px;
     padding-left: 6px;
     padding-right: 6px;
+    margin-top: 4px;
+    margin-bottom: 4px;
 }
 
 #custom-keyboard {

@@ -1,0 +1,127 @@
+#!/usr/bin/env bash
+# azvpn - toggle the WireGuard tunnel to the Azure gateway VM
+#
+# The Windows VM on Proxmox holds the Azure VPN session (Entra group token);
+# this tunnel routes all laptop traffic through it.
+#
+#   azvpn            toggle az-remote
+#   azvpn up         bring up az-remote
+#   azvpn down       tear down whichever tunnel is up
+#   azvpn status     show state and connectivity
+#   azvpn up az      bring up the LAN-endpoint config instead
+#
+# Only `wg-quick up/down` needs root, so a scoped NOPASSWD rule in
+# /etc/sudoers.d/azvpn is enough for the waybar click to work silently.
+# Reachability is tested by ping, which needs no privileges.
+
+set -euo pipefail
+
+DEFAULT_IFACE="az-remote"
+KNOWN_IFACES=(az az-remote)
+PROBE_HOST="10.142.84.132"   # Azure private resolver, only reachable via tunnel
+
+red()  { printf '\033[31m%s\033[0m\n' "$*"; }
+grn()  { printf '\033[32m%s\033[0m\n' "$*"; }
+ylw()  { printf '\033[33m%s\033[0m\n' "$*"; }
+
+# refresh the waybar module immediately instead of waiting for its poll
+refresh_bar() { pkill -RTMIN+9 waybar 2>/dev/null || true; }
+
+is_up()  { [[ -d "/sys/class/net/$1" ]]; }
+probe()  { ping -c1 -W2 "$PROBE_HOST" &>/dev/null; }
+
+active_iface() {
+    local i
+    for i in "${KNOWN_IFACES[@]}"; do
+        if is_up "$i"; then printf '%s' "$i"; return 0; fi
+    done
+    return 1
+}
+
+valid_iface() {
+    local i
+    for i in "${KNOWN_IFACES[@]}"; do
+        [[ "$i" == "$1" ]] && return 0
+    done
+    red "unknown interface: $1 (known: ${KNOWN_IFACES[*]})"
+    exit 1
+}
+
+do_down() {
+    local cur
+    if cur=$(active_iface); then
+        sudo wg-quick down "$cur"
+        refresh_bar
+        grn "down: $cur"
+    else
+        ylw "already down"
+    fi
+}
+
+do_up() {
+    local want="$1" cur
+    valid_iface "$want"
+
+    if cur=$(active_iface); then
+        if [[ "$cur" == "$want" ]]; then
+            ylw "already up: $want"
+            return 0
+        fi
+        # only one tunnel at a time: same address, same default route
+        sudo wg-quick down "$cur"
+        grn "down: $cur"
+    fi
+
+    sudo wg-quick up "$want"
+    refresh_bar
+    grn "up: $want"
+
+    # the interface coming up proves nothing; reachability does
+    local i
+    for i in {1..10}; do
+        if probe; then
+            grn "azure reachable"
+            refresh_bar
+            return 0
+        fi
+        sleep 1
+    done
+
+    red "tunnel up but $PROBE_HOST unreachable"
+    ylw "check the gateway VM: Azure client connected? Get-NetNat present?"
+    ylw "if the Entra session expired it needs interactive MFA on the VM"
+    refresh_bar
+    return 1
+}
+
+do_status() {
+    local cur
+    if ! cur=$(active_iface); then
+        ylw "down"
+        return 0
+    fi
+
+    grn "up: $cur"
+    # informational only - skipped silently if sudo would prompt
+    sudo -n wg show "$cur" 2>/dev/null || true
+
+    if probe; then
+        grn "azure reachable"
+    else
+        red "azure unreachable"
+        ylw "most likely: Azure session expired on the VM, needs re-auth (MFA)"
+    fi
+}
+
+case "${1:-toggle}" in
+    up|on|start)    do_up "${2:-$DEFAULT_IFACE}" ;;
+    down|off|stop)  do_down ;;
+    status|st)      do_status ;;
+    toggle|"")
+        if active_iface >/dev/null; then do_down; else do_up "$DEFAULT_IFACE"; fi
+        ;;
+    *)
+        sed -n '2,16p' "$0" | sed 's/^# \?//'
+        exit 1
+        ;;
+esac

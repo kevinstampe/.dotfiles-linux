@@ -4,7 +4,15 @@
   "position": "top",
   "modules-left": ["custom/wofi", "hyprland/workspaces"],
   "modules-center": ["hyprland/window", "custom/close"],
-  "modules-right": ["bluetooth", "network", "pulseaudio", "battery", "clock", "custom/keyboard", "custom/power"],
+  "modules-right": ["custom/vpn", "bluetooth", "network", "pulseaudio", "battery", "clock", "custom/keyboard", "custom/power"],
+ "custom/vpn": {
+    "format": "{}",
+    "return-type": "json",
+    "exec": "~/.local/bin/azvpn-waybar",
+    "interval": 10,
+    "signal": 9,
+    "on-click": "~/.local/bin/azvpn toggle"
+ },
  "hyprland/window": {
     "format": "{title}",
     "max-length": 120,
