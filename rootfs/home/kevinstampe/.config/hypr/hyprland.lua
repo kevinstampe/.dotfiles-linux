@@ -37,7 +37,7 @@ end
 ---------------------
 
 local terminal    = "ghostty"
-local fileManager = "thunar"
+local fileManager = "ghostty --class=dev.tui.yazi -e yazi"
 local menu        = "wofi -S drun -i"
 
 -------------------
@@ -243,11 +243,17 @@ hl.bind(mainMod .. " + C", hl.dsp.exec_cmd(terminal))
 hl.bind(mainMod .. " + Q", hl.dsp.window.close())
 hl.bind(mainMod .. " + M", hl.dsp.exit())
 hl.bind(mainMod .. " + E", hl.dsp.exec_cmd(fileManager))
+hl.bind(mainMod .. " + SHIFT + E", hl.dsp.exec_cmd("thunar"))
 hl.bind(mainMod .. " + F", hl.dsp.window.fullscreen())
 hl.bind(mainMod .. " + space", hl.dsp.exec_cmd(menu))
 hl.bind(mainMod .. " + P", hl.dsp.exec_cmd("hyprctl reload"))
 hl.bind(mainMod .. " + B", hl.dsp.exec_cmd("chromium"))
 hl.bind(mainMod .. " + R", hl.dsp.exec_cmd("rider"))
+
+-- wifi / bluetooth TUIs (float rules match on the --class app-id)
+hl.bind(mainMod .. " + I", hl.dsp.exec_cmd(terminal .. " --class=dev.tui.impala -e impala"))
+hl.bind(mainMod .. " + U", hl.dsp.exec_cmd(terminal .. " --class=dev.tui.bluetui -e bluetui"))
+hl.bind(mainMod .. " + S", hl.dsp.exec_cmd(terminal .. " --class=dev.tui.wiremix -e wiremix"))
 
 -- ROG side button: double-press to enter Steam Gaming Mode
 hl.bind("XF86Launch3", hl.dsp.exec_cmd("~/.local/bin/steam-hold"), { locked = true })
@@ -393,27 +399,54 @@ hl.window_rule({
     name  = "calculator-float",
     match = { class = "^(org.gnome.Calculator)$" },
     float = true,
+    size  = "375 666",
 })
 
--- pavucontrol
+-- scangearmp2 (Canon scanner GUI): float + center
 hl.window_rule({
-    name  = "pavucontrol-float",
-    match = { class = "^(org.pulseaudio.pavucontrol|pavucontrol)$" },
+    name   = "scangearmp2-float",
+    match  = { class = "^(Scangearmp2)$" },
+    float  = true,
+    center = true,
+})
+
+-- yazi (file manager TUI, SUPER+E)
+hl.window_rule({
+    name   = "yazi-float",
+    match  = { class = "^(dev.tui.yazi)$" },
+    float  = true,
+    center = true,
+    size   = "1400 900",
+})
+
+-- wiremix (audio TUI, launched from waybar pulseaudio module)
+hl.window_rule({
+    name   = "wiremix-float",
+    match  = { class = "^(dev.tui.wiremix)$" },
     float  = true,
     center = true,
     size   = "900 900",
 })
 
--- nm-connection-editor
+-- impala (wifi TUI, launched from waybar network module)
 hl.window_rule({
-    name  = "nm-connection-editor-float",
-    match = { class = "^(nm-connection-editor)$" },
+    name   = "impala-float",
+    match  = { class = "^(dev.tui.impala)$" },
     float  = true,
     center = true,
     size   = "900 900",
 })
 
--- pinentry (wifi password prompt from networkmanager_dmenu): float + center,
+-- bluetui (bluetooth TUI, launched from waybar bluetooth module)
+hl.window_rule({
+    name   = "bluetui-float",
+    match  = { class = "^(dev.tui.bluetui)$" },
+    float  = true,
+    center = true,
+    size   = "900 900",
+})
+
+-- pinentry (gpg / password prompts): float + center,
 -- otherwise it gets tiled full-size. GTK2 build runs under xwayland, and the
 -- WM_CLASS it reports varies by build (pinentry / pinentry-gtk-2), so match loose.
 hl.window_rule({
