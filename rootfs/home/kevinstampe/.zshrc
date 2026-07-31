@@ -198,3 +198,6 @@ VBOX_USB=usbfs
 
 # opencode
 export PATH=/home/kevinstampe/.opencode/bin:$PATH
+
+# local secrets (not tracked in dotfiles)
+[[ -f "$HOME/.config/zsh/secrets.zsh" ]] && source "$HOME/.config/zsh/secrets.zsh"

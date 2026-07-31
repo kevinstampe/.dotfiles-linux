@@ -1,0 +1,36 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "github": {
+      "type": "remote",
+      "url": "https://api.githubcopilot.com/mcp/",
+      "enabled": true,
+      "oauth": false,
+      "headers": {
+        "Authorization": "Bearer {env:GITHUB_PAT}"
+      }
+    },
+    "microsoft-learn": {
+      "type": "remote",
+      "url": "https://learn.microsoft.com/api/mcp",
+      "enabled": true
+    },
+    "sequential-thinking": {
+      "type": "local",
+      "command": ["npx", "-y", "@modelcontextprotocol/server-sequential-thinking"],
+      "enabled": true
+    },
+    "umbraco-hulahop": {
+      "type": "local",
+      "command": ["npx", "-y", "@umbraco-cms/mcp-dev@17"],
+      "enabled": true,
+      "environment": {
+        "NODE_TLS_REJECT_UNAUTHORIZED": "0",
+        "UMBRACO_CLIENT_ID": "umbraco-back-office-opencode-mcp",
+        "UMBRACO_CLIENT_SECRET": "{env:UMBRACO_CLIENT_SECRET}",
+        "UMBRACO_BASE_URL": "https://localhost:44384",
+        "UMBRACO_INCLUDE_TOOL_COLLECTIONS": "document,media,document-type,data-type"
+      }
+    }
+  }
+}
