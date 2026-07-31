@@ -395,6 +395,24 @@ hl.window_rule({
     float = true,
 })
 
+-- pavucontrol
+hl.window_rule({
+    name  = "pavucontrol-float",
+    match = { class = "^(org.pulseaudio.pavucontrol|pavucontrol)$" },
+    float  = true,
+    center = true,
+    size   = "900 900",
+})
+
+-- nm-connection-editor
+hl.window_rule({
+    name  = "nm-connection-editor-float",
+    match = { class = "^(nm-connection-editor)$" },
+    float  = true,
+    center = true,
+    size   = "900 900",
+})
+
 -- pinentry (wifi password prompt from networkmanager_dmenu): float + center,
 -- otherwise it gets tiled full-size. GTK2 build runs under xwayland, and the
 -- WM_CLASS it reports varies by build (pinentry / pinentry-gtk-2), so match loose.

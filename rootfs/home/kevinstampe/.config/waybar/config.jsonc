@@ -30,7 +30,8 @@
   "custom/cpu-ram": {
     "format": "{} ",
     "exec": "~/.config/waybar/scripts/cpu-ram.sh",
-    "interval": 1
+    "interval": 1,
+    "on-click": "ghostty -e btop"
   },
   "custom/gpu-vram": {
     "format": "{} ",
@@ -51,7 +52,14 @@
     "format-alt": "<span size='13000' foreground='#98971a'>{icon}</span> {time} ",
     "format-full": "<span size='13000' foreground='#98971a'></span> {capacity:03}% ",
     "format-icons": ["", "", "", ""],
-    "tooltip-format": "{time}"
+    "tooltip-format": "{time}",
+    "menu": "on-click",
+    "menu-file": "/home/kevinstampe/.config/waybar/battery-menu.xml",
+    "menu-actions": {
+      "quiet": "asusctl profile set Quiet",
+      "balanced": "asusctl profile set Balanced",
+      "performance": "asusctl profile set Performance"
+    }
   },
   "network": {
     "format-wifi": "<span size='13000' foreground='#d79921'>  </span>{essid} ",
