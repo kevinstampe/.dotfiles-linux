@@ -10,6 +10,11 @@ FLAG=/tmp/steam-mode
 
 if [ -f "$FLAG" ]; then
     rm -f "$FLAG"
+    # Steam mode has no waybar icon or Super+V bind, so the tunnel would be
+    # stuck on with no way to toggle it - and AllowedIPs=0.0.0.0/0 would route
+    # all game traffic through the homelab gateway VM. Drop it before handing
+    # off. Non-fatal: a failure here must not block the session.
+    "$HOME/.local/bin/azvpn" down >/dev/null 2>&1 || true
     # Hyprland leaks WAYLAND_DISPLAY/DISPLAY into the systemd --user environment,
     # which the gamescope-session-plus@.service inherits. That makes gamescope
     # pick the nested wayland backend and crash ("Failed to connect to wayland
