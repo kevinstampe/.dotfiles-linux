@@ -9,7 +9,7 @@
 
 set -uo pipefail
 
-KNOWN_IFACES=(az az-remote)
+KNOWN_IFACES=(az)
 PROBE_HOST="10.142.84.132"   # Azure private resolver, only reachable via tunnel
 ICON="<span size='13000' foreground='#cc241d'>󰖂 </span>"
 

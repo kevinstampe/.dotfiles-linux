@@ -4,11 +4,10 @@
 # The Windows VM on Proxmox holds the Azure VPN session (Entra group token);
 # this tunnel routes all laptop traffic through it.
 #
-#   azvpn            toggle az-remote
-#   azvpn up         bring up az-remote
-#   azvpn down       tear down whichever tunnel is up
+#   azvpn            toggle the tunnel
+#   azvpn up         bring it up
+#   azvpn down       bring it down
 #   azvpn status     show state and connectivity
-#   azvpn up az      bring up the LAN-endpoint config instead
 #
 # Only `wg-quick up/down` needs root, so a scoped NOPASSWD rule in
 # /etc/sudoers.d/azvpn is enough for the waybar click to work silently.
@@ -16,8 +15,8 @@
 
 set -euo pipefail
 
-DEFAULT_IFACE="az-remote"
-KNOWN_IFACES=(az az-remote)
+DEFAULT_IFACE="az"
+KNOWN_IFACES=(az)
 PROBE_HOST="10.142.84.132"   # Azure private resolver, only reachable via tunnel
 
 red()  { printf '\033[31m%s\033[0m\n' "$*"; }
