@@ -2,7 +2,7 @@
 Type=Application
 Name=Windows AVD
 Comment=Azure Virtual Desktop web client
-Exec=firefox --new-window "https://windows.cloud.microsoft/webclient/avd/db63b888-b50a-4976-9b64-0bac422d8efa/7b5a3f32-50c0-45ec-afe1-08dc22430edf#loginHint=XKGST%40energinet.dk"
+Exec=firefox -kiosk --new-window "https://windows.cloud.microsoft/webclient/avd/db63b888-b50a-4976-9b64-0bac422d8efa/7b5a3f32-50c0-45ec-afe1-08dc22430edf#loginHint=XKGST%40energinet.dk"
 Icon=firefox
 Terminal=false
 Categories=Network;RemoteAccess;

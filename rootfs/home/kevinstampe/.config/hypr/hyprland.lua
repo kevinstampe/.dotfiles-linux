@@ -482,3 +482,10 @@ hl.window_rule({
     match = { class = "^(jetbrains-rider)$", title = "^$" },
     stay_focused = true,
 })
+
+-- firefox (windows avd)
+ hl.window_rule({
+    name = "Firefox kiosk as normal window",
+    match = { class = "firefox" },
+    fullscreen_state = "0 0"
+})
