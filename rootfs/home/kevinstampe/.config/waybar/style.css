@@ -150,3 +150,7 @@ button:hover {
 #custom-close:hover {
     color: @mauve;
 }
+
+#custom-vpn.broken {
+    color: @red;
+}

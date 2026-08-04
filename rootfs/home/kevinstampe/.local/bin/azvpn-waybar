@@ -2,14 +2,20 @@
 # azvpn-waybar - waybar status for the Azure gateway tunnel
 #
 # Emits JSON. Runs unprivileged: interface presence comes from /sys, and
-# reachability from a ping. Nothing here needs sudo, so waybar can poll it.
+# reachability from pings. Nothing here needs sudo, so waybar can poll it.
+#
+# Three live states, because the two failure modes need different responses:
+# Azure reachability is the primary signal. The peer ping is only used to
+# refine the tooltip - the VM blocks ICMP echo by default, so peer silence
+# alone means nothing. Split tunnel means a dead tunnel never costs internet.
 #
 # Styling matches the other modules: icon coloured inline via pango, label
-# left to inherit the module colour (white) from style.css.
+# left to inherit the module colour from style.css.
 
 set -uo pipefail
 
 KNOWN_IFACES=(az)
+PEER_HOST="10.99.0.1"        # the gateway VM inside the tunnel
 PROBE_HOST="10.142.84.132"   # Azure private resolver, only reachable via tunnel
 ICON="<span size='13000' foreground='#cc241d'>󰖂 </span>"
 
@@ -25,6 +31,10 @@ fi
 
 if ping -c1 -W1 "$PROBE_HOST" &>/dev/null; then
     printf '{"text":"%s%s","class":"connected","tooltip":"Azure VPN: connected via %s"}\n' "$ICON" "$iface" "$iface"
+elif ping -c1 -W1 "$PEER_HOST" &>/dev/null; then
+    printf '{"text":"%s%s!","class":"degraded","tooltip":"Azure VPN: tunnel up (%s), internet fine, but Azure unreachable\\nThe VM likely needs Entra re-auth (MFA)."}\n' \
+        "$ICON" "$iface" "$iface"
 else
-    printf '{"text":"%s%s!","class":"degraded","tooltip":"Azure VPN: tunnel up (%s) but Azure unreachable\\nCheck the gateway VM: Azure client connected? Session may need re-auth (MFA)."}\n' "$ICON" "$iface" "$iface"
+    printf '{"text":"%s%s!","class":"degraded","tooltip":"Azure VPN: tunnel up (%s) but Azure unreachable, peer silent too\\nInternet is unaffected (split tunnel).\\nCheck the VM: WireGuard Active? Get-NetNat present? Azure connected?"}\n' \
+        "$ICON" "$iface" "$iface"
 fi

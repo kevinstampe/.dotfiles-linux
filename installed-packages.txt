@@ -51,6 +51,7 @@ git 2.55.0-1.1
 github-cli 2.96.0-1.1
 gnome-calculator 50.0-1
 gnome-tweaks 49.0-2
+google-chrome 151.0.7922.71-1
 greetd 0.10.3-2.1
 gsimplecal 2.5.2-1.1
 gst-plugin-pipewire 1:1.6.8-1
@@ -152,6 +153,7 @@ waybar-git 0.15.0.r951.gd3fb8a6-1
 wev 1.1.0-1.1
 wget 1.25.0-6
 wireguard-tools 1.0.20260223-1.1
+wireless-regdb 2026.05.30-1
 wiremix 0.11.0-1.1
 wireplumber 0.5.15-1.1
 wl-clip-persist 0.5.0-2.1

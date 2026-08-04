@@ -37,4 +37,5 @@ When drafting tasks, issues, specs, or other content meant to be copied elsewher
 ## Development guidelines
 Always check a folder for docs folder, and use the content of the folder as guidelines for development.
 Always use the contents of .github/ and it's underlying github instructions as guidelines. All of my coworkers use normal github copilot, so when something gets changed in those files, i want you to also use that context.
+When you update a version number in a .csproj file, always add a matching entry to the release notes file if the project has one. Follow the existing format and ordering in that file.
 

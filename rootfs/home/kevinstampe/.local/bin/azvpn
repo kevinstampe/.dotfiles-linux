@@ -17,6 +17,7 @@ set -euo pipefail
 
 DEFAULT_IFACE="az"
 KNOWN_IFACES=(az)
+PEER_HOST="10.99.0.1"        # the gateway VM inside the tunnel
 PROBE_HOST="10.142.84.132"   # Azure private resolver, only reachable via tunnel
 
 red()  { printf '\033[31m%s\033[0m\n' "$*"; }
@@ -75,7 +76,10 @@ do_up() {
     refresh_bar
     grn "up: $want"
 
-    # the interface coming up proves nothing; reachability does
+    # Azure reachability is the only meaningful success test. The peer ping is
+    # advisory: Windows Firewall blocks ICMP echo by default, so 10.99.0.1 may
+    # never answer even on a perfectly healthy tunnel. Never tear down on it -
+    # with split tunnel a dead tunnel costs Azure access, not internet.
     local i
     for i in {1..10}; do
         if probe; then
@@ -86,9 +90,9 @@ do_up() {
         sleep 1
     done
 
-    red "tunnel up but $PROBE_HOST unreachable"
-    ylw "check the gateway VM: Azure client connected? Get-NetNat present?"
-    ylw "if the Entra session expired it needs interactive MFA on the VM"
+    ylw "tunnel up but azure unreachable"
+    ylw "check the VM: Azure client connected? session may need re-auth (MFA)"
+    ylw "internet is unaffected - split tunnel only routes Azure ranges"
     refresh_bar
     return 1
 }
@@ -106,9 +110,13 @@ do_status() {
 
     if probe; then
         grn "azure reachable"
-    else
-        red "azure unreachable"
+    elif ping -c1 -W2 "$PEER_HOST" &>/dev/null; then
+        red "peer ok but azure unreachable"
         ylw "most likely: Azure session expired on the VM, needs re-auth (MFA)"
+    else
+        red "azure unreachable, peer silent too"
+        ylw "note: the VM blocks ICMP by default, so peer silence is not proof"
+        ylw "check the VM: WireGuard Active? Get-NetNat present? Azure connected?"
     fi
 }
 
