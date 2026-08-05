@@ -251,7 +251,7 @@ hl.bind(mainMod .. " + B", hl.dsp.exec_cmd("chromium"))
 hl.bind(mainMod .. " + R", hl.dsp.exec_cmd("rider"))
 
 -- wifi / bluetooth TUIs (float rules match on the --class app-id)
-hl.bind(mainMod .. " + I", hl.dsp.exec_cmd(terminal .. " --class=dev.tui.impala -e impala"))
+hl.bind(mainMod .. " + I", hl.dsp.exec_cmd(terminal .. " --class=dev.tui.wlctl -e wlctl"))
 hl.bind(mainMod .. " + U", hl.dsp.exec_cmd(terminal .. " --class=dev.tui.bluetui -e bluetui"))
 hl.bind(mainMod .. " + S", hl.dsp.exec_cmd(terminal .. " --class=dev.tui.wiremix -e wiremix"))
 
@@ -431,10 +431,10 @@ hl.window_rule({
     size   = "900 900",
 })
 
--- impala (wifi TUI, launched from waybar network module)
+-- wlctl (wifi TUI, launched from waybar network module)
 hl.window_rule({
-    name   = "impala-float",
-    match  = { class = "^(dev.tui.impala)$" },
+    name   = "wlctl-float",
+    match  = { class = "^(dev.tui.wlctl)$" },
     float  = true,
     center = true,
     size   = "900 900",
