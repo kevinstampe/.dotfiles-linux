@@ -15,7 +15,7 @@ window#waybar {
     transition-property: background-color;
     transition-duration: 0.1s;
     border: 1px solid @overlay1;
-    border-radius: 4px;
+    border-radius: 6px;
 }
 
 #window {
@@ -59,6 +59,7 @@ button:hover {
 #pulseaudio,
 #clock,
 #battery,
+#custom-battery,
 #cpu,
 #memory,
 #disk,

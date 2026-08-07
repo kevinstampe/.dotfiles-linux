@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# Waybar custom battery module: capacity + asusctl power profile in tooltip.
+
+BAT=/sys/class/power_supply/BAT0
+
+capacity=$(cat "$BAT/capacity" 2>/dev/null || echo 0)
+status=$(cat "$BAT/status" 2>/dev/null || echo Unknown)
+
+case "$status" in
+  Charging) icon=$'\uf1e6' ;;
+  Full)     icon=$'\uf240' ;;
+  *)
+    if   [ "$capacity" -ge 75 ]; then icon=$'\uf241'
+    elif [ "$capacity" -ge 50 ]; then icon=$'\uf242'
+    elif [ "$capacity" -ge 25 ]; then icon=$'\uf243'
+    else icon=$'\uf244'
+    fi
+    ;;
+esac
+
+if [ "$capacity" -le 15 ]; then
+  class="critical"
+elif [ "$capacity" -le 30 ]; then
+  class="warning"
+else
+  class="$(echo "$status" | tr '[:upper:]' '[:lower:]')"
+fi
+
+profile=$(asusctl profile get 2>/dev/null | sed -n 's/^Active profile: //p')
+[ -z "$profile" ] && profile="unknown"
+
+text=$(printf "<span size='13000' foreground='#98971a'>%s</span> %03d%% " "$icon" "$capacity")
+
+printf '{"text":"%s","tooltip":"%s","class":"%s"}\n' \
+  "$text" "$profile" "$class"

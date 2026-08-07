@@ -4,7 +4,7 @@
   "position": "top",
   "modules-left": ["custom/wofi", "hyprland/workspaces"],
   "modules-center": ["hyprland/window", "custom/close"],
-  "modules-right": ["custom/vpn", "bluetooth", "network", "pulseaudio", "battery", "clock", "custom/keyboard", "custom/power"],
+  "modules-right": ["custom/vpn", "bluetooth", "network", "pulseaudio", "custom/battery", "clock", "custom/keyboard", "custom/power"],
  "custom/vpn": {
     "format": "{}",
     "return-type": "json",
@@ -35,26 +35,18 @@
     "tooltip": false,
     "on-click": "~/.config/hypr/calendar-toggle.sh"
   },
-   "battery": {
-    "states": {
-      "warning": 30,
-      "critical": 15
-    },
-    "format": "<span size='13000' foreground='#98971a'>{icon}</span> {capacity:03}% ",
-    "format-warning": "<span size='13000' foreground='#98971a'>{icon}</span> {capacity:03}% ",
-    "format-critical": "<span size='13000' foreground='#98971a'>{icon}</span> {capacity:03}% ",
-    "format-charging": "<span size='13000' foreground='#98971a'></span> {capacity:03}% ",
-    "format-plugged": "<span size='13000' foreground='#98971a'></span> {capacity:03}% ",
-    "format-alt": "<span size='13000' foreground='#98971a'>{icon}</span> {time} ",
-    "format-full": "<span size='13000' foreground='#98971a'></span> {capacity:03}% ",
-    "format-icons": ["", "", "", ""],
-    "tooltip-format": "{time}",
+  "custom/battery": {
+    "format": "{}",
+    "return-type": "json",
+    "exec": "~/.local/bin/battery-waybar",
+    "interval": 10,
+    "signal": 10,
     "menu": "on-click",
     "menu-file": "/home/kevinstampe/.config/waybar/battery-menu.xml",
     "menu-actions": {
-      "quiet": "asusctl profile set Quiet",
-      "balanced": "asusctl profile set Balanced",
-      "performance": "asusctl profile set Performance"
+      "quiet": "asusctl profile set Quiet; pkill -RTMIN+10 waybar",
+      "balanced": "asusctl profile set Balanced; pkill -RTMIN+10 waybar",
+      "performance": "asusctl profile set Performance; pkill -RTMIN+10 waybar"
     }
   },
   "bluetooth": {
