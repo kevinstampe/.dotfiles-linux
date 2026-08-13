@@ -18,7 +18,7 @@ hl.monitor({ output = aorus, mode = "3840x2160@240", position = "2560x-1800", sc
 hl.monitor({ output = hpZ40, mode = "5120x2160@60",  position = "2560x-1800", scale = 1 })
 -- eDP-1 (laptop) placed to the LEFT of the external monitor.
 -- logical width = 2560/1.6 = 1600; external left edge = x2560, so x = 2560-1600 = 960
-hl.monitor({ output = "eDP-1", mode = "2560x1600@180", position = "960x0", scale = 1.6 })
+hl.monitor({ output = "eDP-1", mode = "2560x1600@180", position = "640x0", scale = 1.333333 })
 
 --------------------
 ---- WORKSPACES ----

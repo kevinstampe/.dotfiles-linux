@@ -52,7 +52,7 @@ apply() {
 
     if [ -z "$external" ]; then
         echo "No external monitor found."
-        mon_set "$INTERNAL" "preferred" "0x0" "1.25"
+        mon_set "$INTERNAL" "preferred" "0x0" "1.333333"
         for i in {1..12}; do
             ws_rule "$i" "$INTERNAL"
             ws_move "$i" "$INTERNAL"
@@ -67,7 +67,7 @@ apply() {
     else
         echo "Lid open: 1-12 to $external, 13 to $INTERNAL"
         # 1. Re-enable internal monitor
-        mon_set "$INTERNAL" "preferred" "0x0" "1"
+        mon_set "$INTERNAL" "preferred" "640x0" "1.333333"
 
         # 2. Assign the rules (The "Contract")
         for i in {1..12}; do
