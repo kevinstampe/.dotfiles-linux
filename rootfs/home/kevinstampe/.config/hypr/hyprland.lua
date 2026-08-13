@@ -25,13 +25,6 @@ hl.monitor({ output = "eDP-1", mode = "2560x1600@180", position = "960x0", scale
 --------------------
 -- See https://wiki.hypr.land/Configuring/Basics/Workspace-Rules/
 
-for i = 1, 12 do
-    hl.workspace_rule({ workspace = tostring(i), monitor = aorus })
-end
-for i = 1, 12 do
-    hl.workspace_rule({ workspace = tostring(i), monitor = hpZ40 })
-end
-
 ---------------------
 ---- MY PROGRAMS ----
 ---------------------
