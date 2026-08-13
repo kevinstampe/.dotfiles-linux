@@ -44,6 +44,7 @@ ethtool 1:7.1-1.1
 fastfetch 2.67.0-1.1
 ffmpegthumbnailer 2.3.0-2.1
 firefox 153.0.4-1
+flemozi-bin 0.2.0-1
 fzf 0.74.2-1.1
 gamescope 3.16.25-1
 gamescope-session-steam-git r19.1019f9a-1

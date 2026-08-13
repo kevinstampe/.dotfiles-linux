@@ -328,6 +328,9 @@ hl.bind("XF86Launch4", hl.dsp.exec_cmd("zsh ~/.config/hypr/power-profile.sh"), {
 -- toggle kbd backlight
 hl.bind("XF86KbdLightOnOff", hl.dsp.exec_cmd("asusctl leds next"), { locked = true })
 
+-- toggle meme
+hl.bind(mainMod .. " + period", hl.dsp.exec_cmd("flemozi"))
+
 --------------------------------
 ---- WINDOWS AND WORKSPACES ----
 --------------------------------
