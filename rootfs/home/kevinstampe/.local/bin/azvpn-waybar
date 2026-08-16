@@ -14,6 +14,14 @@
 
 set -uo pipefail
 
+# Nothing to report on a machine without WireGuard: azvpn drives the tunnel
+# with wg-quick, so without it the module is dead weight. Empty text makes
+# waybar hide the module entirely.
+if ! command -v wg-quick >/dev/null 2>&1; then
+    printf '{"text":""}\n'
+    exit 0
+fi
+
 KNOWN_IFACES=(az)
 PEER_HOST="10.99.0.1"        # the gateway VM inside the tunnel
 PROBE_HOST="10.142.84.132"   # Azure private resolver, only reachable via tunnel

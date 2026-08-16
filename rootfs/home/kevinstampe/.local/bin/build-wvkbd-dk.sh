@@ -83,7 +83,86 @@ open(kc_path, "w", encoding="utf-8").write(kc)
 print("   added Hide key type")
 PY
 
+echo ">> Patching the keymap upload leak"
+python3 - "$SRC" <<'PY'
+import sys, os
+
+src_dir = sys.argv[1]
+kc_path = os.path.join(src_dir, "keyboard.c")
+kc = open(kc_path, encoding="utf-8").read()
+
+if "LEAK-PATCH" in kc:
+    print("   already patched, skipping")
+    sys.exit(0)
+
+# create_and_upload_keymap() mmaps the keymap and never unmaps it, leaking
+# ~51KB every time it runs. It runs on every Copy key press, so a few thousand
+# presses of å/æ/ø or €/£/• adds up. libwayland takes ownership of the fd and
+# closes it after sending, so only the mapping needs cleaning up.
+old = """    zwp_virtual_keyboard_v1_keymap(kb->vkbd, WL_KEYBOARD_KEYMAP_FORMAT_XKB_V1,
+                                   keymap_fd, keymap_size);
+    free((void *)keymap_str);"""
+new = """    zwp_virtual_keyboard_v1_keymap(kb->vkbd, WL_KEYBOARD_KEYMAP_FORMAT_XKB_V1,
+                                   keymap_fd, keymap_size);
+    munmap(ptr, keymap_size); /* LEAK-PATCH */
+    free((void *)keymap_str);"""
+
+if old not in kc:
+    raise SystemExit("keyboard.c: keymap upload anchor not found")
+
+kc = kc.replace(old, new, 1)
+open(kc_path, "w", encoding="utf-8").write(kc)
+print("   added munmap after keymap upload")
+PY
+
+echo ">> Patching the stuck-key-on-hide bug"
+python3 - "$SRC" <<'PY'
+import sys, os
+
+src_dir = sys.argv[1]
+mc_path = os.path.join(src_dir, "main.c")
+mc = open(mc_path, encoding="utf-8").read()
+
+if "STUCK-PATCH" in mc:
+    print("   already patched, skipping")
+    sys.exit(0)
+
+# hide() tears the surfaces down and clears layer_surface_configured, but never
+# releases a key that is still held. wl_touch_up() bails out early when the
+# surface is not configured, so the release never happens and the compositor
+# auto-repeats the key forever.
+#
+# This is reachable whenever the keyboard is hidden between touch-down and
+# touch-up, which --auto makes routine: deleting the last character of a field
+# deactivates the input method, which hides the keyboard while backspace is
+# still held. Releasing before teardown is enough, and must happen first
+# because kbd_unpress_key() redraws.
+old = """hide()
+{
+    if (!layer_surface) {
+        return;
+    }
+"""
+new = """hide()
+{
+    if (!layer_surface) {
+        return;
+    }
+
+    /* STUCK-PATCH: never leave a key held across teardown */
+    kbd_unpress_key(&keyboard, 0);
+"""
+
+if old not in mc:
+    raise SystemExit("main.c: hide() anchor not found")
+
+mc = mc.replace(old, new, 1)
+open(mc_path, "w", encoding="utf-8").write(mc)
+print("   release held key before hiding")
+PY
+
 echo ">> Building"
+
 make -C "$SRC" LAYOUT=dk >/dev/null
 
 echo ">> Installing to /usr/local/bin (needs sudo)"

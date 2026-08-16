@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+# ROG side button (Meta+Shift+F23, bound as XF86Launch3).
+#
+# The button is a momentary media key: the firmware emits press and release
+# within ~1ms, verified by reading the raw evdev stream. Hold duration is
+# therefore not measurable, so both features are built on tap counting:
+#
+#   1 tap   -> arm brightness mode (volume keys adjust brightness, see
+#              vol-or-bright) for BRIGHT_ARM_MS
+#   3 taps  -> Steam Gaming Mode, within TRIPLE_WINDOW_MS end to end
+#
+# Arming on every tap is harmless: the taps on the way to a triple still just
+# re-arm a mode that expires on its own.
+
+set -euo pipefail
+
+TAPS=/tmp/side-button.taps
+ARM=/tmp/brightness-mode.stamp
+TRIPLE_WINDOW_MS=1500
+TAPS_FOR_STEAM=3
+
+now=$(date +%s%3N)
+
+# Keep only taps inside the window, then add this one.
+taps=""
+if [[ -f "$TAPS" ]]; then
+    for t in $(cat "$TAPS"); do
+        [[ $((now - t)) -le $TRIPLE_WINDOW_MS ]] && taps="$taps $t"
+    done
+fi
+taps="$taps $now"
+echo "$taps" > "$TAPS"
+
+# Arm brightness mode on every tap.
+echo "$now" > "$ARM"
+
+count=$(wc -w <<<"$taps")
+if [[ "$count" -ge "$TAPS_FOR_STEAM" ]]; then
+    rm -f "$TAPS" "$ARM"
+    exec "$HOME/.local/bin/steam-mode"
+fi
+
+notify-send -t 2000 -h string:x-canonical-private-synchronous:brightness-mode \
+    "Brightness mode" "Volume keys adjust brightness"
