@@ -3,6 +3,13 @@
 
 BAT=/sys/class/power_supply/BAT0
 
+# Desktops have no BAT0. Without this the script would report 0% and style
+# itself "critical". Empty text makes waybar hide the module entirely.
+if [ ! -d "$BAT" ]; then
+  printf '{"text":""}\n'
+  exit 0
+fi
+
 capacity=$(cat "$BAT/capacity" 2>/dev/null || echo 0)
 status=$(cat "$BAT/status" 2>/dev/null || echo Unknown)
 
