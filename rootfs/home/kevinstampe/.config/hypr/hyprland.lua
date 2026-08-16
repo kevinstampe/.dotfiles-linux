@@ -25,6 +25,51 @@ hl.monitor({ output = "eDP-1", mode = "2560x1600@180", position = "640x0", scale
 --------------------
 -- See https://wiki.hypr.land/Configuring/Basics/Workspace-Rules/
 
+-----------------
+---- PLUGINS ----
+-----------------
+-- hyprbars: per-window title bar with tappable buttons (touch-friendly window
+-- controls). Installed from the AUR package hyprland-plugin-hyprbars, which is
+-- version-locked to the running Hyprland - it must be reinstalled after every
+-- Hyprland update or the plugin will refuse to load.
+
+hl.plugin.load("/usr/lib/libhyprbars.so")
+
+-- Colours mirror waybar (see ~/.config/waybar/style.css): opaque black bar,
+-- @overlay0 (#aaaaaa) text, @overlay1 (#888888) accents.
+hl.config({
+    plugin = {
+        hyprbars = {
+            bar_height                 = 26,
+            bar_padding                = 10,
+            bar_button_padding         = 8,
+            bar_color                  = "rgba(000000ff)",
+            ["col.text"]               = "rgb(aaaaaa)",
+            bar_text_font              = "JetBrainsMono Nerd Font",
+            bar_text_size              = 11,
+            bar_text_align             = "center",
+            bar_buttons_alignment      = "right",
+            bar_part_of_window         = true,
+            bar_precedence_over_border = true,
+        },
+    },
+})
+
+-- Buttons render right-to-left in the order they are added.
+-- NOTE: `action` must be a shell command string (not an hl.dsp dispatcher),
+-- so window actions have to go back out through hyprctl.
+--
+-- Deliberately no fullscreen button: hyprbars does not draw on fullscreen
+-- windows and waybar sits on the `top` layer (below fullscreen), so there
+-- would be no way to leave fullscreen without a keyboard.
+hl.plugin.hyprbars.add_button({
+    bg_color = "rgb(cc241d)",
+    fg_color = "rgb(000000)",
+    size     = 12,
+    icon     = "",
+    action   = "hyprctl dispatch 'hl.dsp.window.close()'",
+})
+
 ---------------------
 ---- MY PROGRAMS ----
 ---------------------
@@ -32,6 +77,8 @@ hl.monitor({ output = "eDP-1", mode = "2560x1600@180", position = "640x0", scale
 local terminal    = "ghostty"
 local fileManager = "ghostty --class=dev.tui.yazi -e yazi"
 local menu        = "wofi -S drun -i"
+-- App drawer: opened from the waybar button via ~/.local/bin/drawer-toggle,
+-- which owns the nwg-drawer flags. Not run resident; see that script.
 
 -------------------
 ---- AUTOSTART ----
@@ -53,6 +100,9 @@ hl.on("hyprland.start", function()
 
     hl.exec_cmd("~/.config/hypr/waybar-launch.sh")
     hl.exec_cmd("~/.config/hypr/autoreload-waybar.sh")
+
+    -- Keeps wvkbd running hidden, with --auto only while the folio is detached.
+    hl.exec_cmd("~/.local/bin/osk-folio-watch")
 
     hl.exec_cmd("$HOME/.local/lib/import_env tmux")
     hl.exec_cmd("$HOME/.local/lib/import_env system")
@@ -214,6 +264,14 @@ hl.config({
         force_zero_scaling   = true,
         use_nearest_neighbor = true,
     },
+
+    -- tablet: don't leave a stale pointer arrow sitting on screen after
+    -- touch/pen input. cursor reappears as soon as the mouse/touchpad moves.
+    cursor = {
+        hide_on_touch                  = true,
+        hide_on_key_press              = false,
+        warp_back_after_non_mouse_input = true,
+    },
 })
 
 -- Example per-device config
@@ -222,6 +280,15 @@ hl.device({
     name        = "epic-mouse-v1",
     sensitivity = -0.5,
 })
+
+------------------
+---- GESTURES ----
+------------------
+
+-- No gestures configured. The app drawer is opened from the waybar button.
+-- NOTE: Hyprland's gesture engine consumes libinput *gesture* events, which
+-- touchscreens never emit (they send raw touch points), so any gesture added
+-- here would apply to the touchpad only.
 
 ---------------------
 ---- KEYBINDINGS ----
@@ -259,7 +326,8 @@ hl.bind(mainMod .. " + SHIFT + PRINT", hl.dsp.exec_cmd("hyprshot -m region --raw
 hl.bind(mainMod .. " + SHIFT + slash", hl.dsp.layout("togglesplit"))
 
 -- toggle on-screen keyboard (wvkbd)
-hl.bind(mainMod .. " + O", hl.dsp.exec_cmd("zsh ~/.config/hypr/osk-toggle.sh"))
+-- locked = true -> keybind still fires while hyprlock is active
+hl.bind(mainMod .. " + O", hl.dsp.exec_cmd("zsh ~/.config/hypr/osk-toggle.sh"), { locked = true })
 
 -- toggle the Azure VPN tunnel (WireGuard -> Windows gateway VM)
 hl.bind(mainMod .. " + V", hl.dsp.exec_cmd("~/.local/bin/azvpn toggle"))
@@ -485,3 +553,16 @@ hl.window_rule({
     match = { class = "firefox" },
     fullscreen_state = "0 0"
 })
+
+-----------------
+---- LAYERS ----
+-----------------
+
+-- on-screen keyboard (wvkbd) usable on the lock screen.
+-- above_lock = 2 -> rendered above hyprlock AND receives input (1/true = render only).
+hl.layer_rule({
+    name       = "wvkbd-above-lock",
+    match      = { namespace = "^wvkbd$" },
+    above_lock = 2,
+})
+

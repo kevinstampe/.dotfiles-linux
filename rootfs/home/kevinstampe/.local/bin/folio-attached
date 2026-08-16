@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# Report whether the detachable keyboard folio is attached.
+#
+# The GZ302EA folio presents itself as USB input devices that disappear from
+# the kernel when it is physically detached, so presence of the touchpad node
+# is a reliable proxy for "the machine currently has a real keyboard".
+#
+# Exit 0 = folio attached (laptop mode), 1 = detached (tablet mode).
+
+grep -q "GZ302EA-Keyboard Touchpad" /proc/bus/input/devices

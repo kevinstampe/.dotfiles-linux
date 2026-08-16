@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+# Keep wvkbd's auto-popup behaviour in sync with the keyboard folio.
+#
+# wvkbd's --auto (show/hide on text-field focus, via zwp_input_method_v2) is a
+# startup flag, so switching it means restarting wvkbd:
+#
+#   folio detached (tablet) -> wvkbd --hidden --auto   (pops up on text fields)
+#   folio attached (laptop) -> wvkbd --hidden          (manual toggle only)
+#
+# wvkbd is always left running and hidden, so the waybar toggle stays instant.
+#
+# This polls instead of watching udev on purpose: `udevadm monitor` block-
+# buffers when its stdout is a pipe, so events arrived late or not at all.
+# Reading one procfs file every couple of seconds is cheap and cannot desync.
+
+set -uo pipefail
+
+HEIGHT=340
+POLL=2
+
+# Called with an absolute path on purpose: this runs from Hyprland's autostart,
+# whose PATH does not necessarily include ~/.local/bin. A missing helper would
+# otherwise exit 127, which `! folio_attached` would read as "detached" and
+# wrongly enable --auto.
+FOLIO_ATTACHED="$HOME/.local/bin/folio-attached"
+
+folio_attached() { "$FOLIO_ATTACHED"; }
+want_auto()      { ! folio_attached; }
+
+start_wvkbd() {
+    pkill -x wvkbd-dk 2>/dev/null || true
+
+    if want_auto; then
+        wvkbd-dk --hidden --auto -L "$HEIGHT" &
+    else
+        wvkbd-dk --hidden -L "$HEIGHT" &
+    fi
+
+    # Let waybar's custom/keyboard module re-read state.
+    pkill -RTMIN+8 waybar 2>/dev/null || true
+}
+
+want_auto && last=auto || last=manual
+start_wvkbd
+
+while sleep "$POLL"; do
+    want_auto && now=auto || now=manual
+
+    # Also relaunch if wvkbd died, so the toggle always has a process to signal.
+    if [[ "$now" != "$last" ]] || ! pgrep -x wvkbd-dk >/dev/null; then
+        last="$now"
+        start_wvkbd
+    fi
+done

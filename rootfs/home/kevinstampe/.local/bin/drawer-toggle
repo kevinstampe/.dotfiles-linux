@@ -1,0 +1,18 @@
+#!/bin/sh
+# Toggle nwg-drawer from waybar.
+#
+# Must background the launch: waybar blocks its event loop on a foreground
+# child, which swallows the next click on the module.
+#
+# -k is required: without it nwg-drawer takes an exclusive keyboard grab,
+# which makes waybar unclickable while the drawer is open.
+#
+# NOTE: do not run a resident (-r) instance of nwg-drawer. This toggle decides
+# open vs close with pgrep, so a permanently-alive instance makes every click
+# read as "close".
+
+if pgrep -x nwg-drawer >/dev/null; then
+    nwg-drawer -close
+else
+    nwg-drawer -c 6 -is 96 -spacing 28 -term ghostty -fm thunar -wm hyprland -k &
+fi

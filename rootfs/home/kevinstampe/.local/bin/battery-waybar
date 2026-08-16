@@ -29,7 +29,7 @@ fi
 profile=$(asusctl profile get 2>/dev/null | sed -n 's/^Active profile: //p')
 [ -z "$profile" ] && profile="unknown"
 
-text=$(printf "<span size='13000' foreground='#98971a'>%s</span> %03d%% " "$icon" "$capacity")
+text=$(printf "<span size='13000' foreground='#98971a'>%s</span> %d%% " "$icon" "$capacity")
 
 printf '{"text":"%s","tooltip":"%s","class":"%s"}\n' \
   "$text" "$profile" "$class"

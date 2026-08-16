@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# Report whether the on-screen keyboard is currently visible.
+#
+# wvkbd destroys its layer surface when hidden (SIGUSR1) and recreates it when
+# shown (SIGUSR2), so the compositor is the source of truth. This matters
+# because --auto lets wvkbd show/hide itself, which no state file would catch.
+#
+# Exit 0 = visible, 1 = hidden.
+
+hyprctl layers 2>/dev/null | grep -q "namespace: wvkbd"
