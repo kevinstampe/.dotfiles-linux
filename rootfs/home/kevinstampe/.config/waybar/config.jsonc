@@ -45,7 +45,7 @@
     }
   },
   "bluetooth": {
-    "format": "<span size='13000' foreground='#3b8eff'>󰂯 </span>{status} ",
+    "format": "<span size='13000' foreground='#3b8eff'>󰂯 </span>off ",
     "format-disabled": "<span size='13000' foreground='#3b8eff'>󰂲 </span>off ",
     "format-off": "<span size='13000' foreground='#3b8eff'>󰂲 </span>off ",
     "format-on": "<span size='13000' foreground='#3b8eff'>󰂯 </span>on ",
