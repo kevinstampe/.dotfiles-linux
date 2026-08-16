@@ -46,7 +46,7 @@
   },
   "bluetooth": {
     "format": "<span size='13000' foreground='#3b8eff'>󰂯 </span>off ",
-    "format-disabled": "<span size='13000' foreground='#3b8eff'>󰂲 </span>off ",
+    "format-disabled": "",
     "format-off": "<span size='13000' foreground='#3b8eff'>󰂲 </span>off ",
     "format-on": "<span size='13000' foreground='#3b8eff'>󰂯 </span>on ",
     "format-connected": "<span size='13000' foreground='#3b8eff'>󰂱 </span>{num_connections} ",
@@ -56,7 +56,7 @@
     "on-click": "ghostty --class=dev.tui.bluetui -e bluetui"
   },
   "network": {
-    "format-wifi": "<span size='13000' foreground='#d79921'>  </span>wi-fi ",
+    "format-wifi": "<span size='13000' foreground='#d79921'>  </span>wifi ",
     "format-ethernet": "<span size='13000' foreground='#d79921'> </span>wired ",
     "format-linked": "<span size='13000' foreground='#d79921'> </span>{ifname} ",
     "format-disconnected": "<span size='13000' foreground='#d79921'> </span>{ifname} ",

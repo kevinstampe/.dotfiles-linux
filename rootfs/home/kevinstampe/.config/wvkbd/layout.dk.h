@@ -11,9 +11,15 @@
  *   - ⌄ hides the keyboard (Hide key type, see the build script's C patch).
  *   - No Ctrl key. Shift+space still sends Tab via SHIFT_SPACE_IS_TAB.
  *
- * Å Æ Ø and every symbol are Copy keys, so they emit their literal codepoint
- * regardless of the system keymap. Letters, digits, Esc, arrows, Enter, Space
- * and Backspace are Code keys so real modifiers still work.
+ * IMPORTANT - key types:
+ *   Every Copy key press rebuilds a ~51KB xkb keymap and re-uploads it, which
+ *   the compositor then recompiles synchronously. Doing that per keystroke
+ *   stalls typing, so Copy is reserved for the few characters that are not in
+ *   the latin keymap at all: å æ ø € £ •
+ *   Everything else is a Code key, using code_mod to force Shift where the
+ *   character lives on the shifted level. That also keeps real modifiers
+ *   working. Shifted levels below follow keymap.mobintl.h's LATIN map, where
+ *   notably question is Shift+period (AB09), not Shift+slash.
  */
 
 /* constants */
@@ -78,7 +84,7 @@ static struct key keys_letters[] = {
   {"", "", 0.0, EndRow},
 
   {"⇧", "⇫", 1.25, Mod, Shift, .scheme = 1},
-  {"!", "!", 1.0, Copy, 0x0021, 0, 0x0021},
+  {"!", "!", 1.0, Code, KEY_1, 0, Shift},
   {"z", "Z", 1.0, Code, KEY_Z},
   {"x", "X", 1.0, Code, KEY_X},
   {"c", "C", 1.0, Code, KEY_C},
@@ -86,15 +92,15 @@ static struct key keys_letters[] = {
   {"b", "B", 1.0, Code, KEY_B},
   {"n", "N", 1.0, Code, KEY_N},
   {"m", "M", 1.0, Code, KEY_M},
-  {"?", "?", 1.0, Copy, 0x003F, 0, 0x003F},
+  {"?", "?", 1.0, Code, KEY_DOT, 0, Shift},
   {"⌫", "⌫", 1.25, Code, KEY_BACKSPACE, .scheme = 1},
   {"", "", 0.0, EndRow},
 
   {"123", "123", 1.5, Layout, 0, &layouts[Numbers], .scheme = 1},
   {"Esc", "Esc", 1.0, Code, KEY_ESC, .scheme = 1},
-  {",", ",", 1.0, Copy, 0x002C, 0, 0x002C},
+  {",", ",", 1.0, Code, KEY_COMMA},
   {"", "Tab", 3.5, Code, KEY_SPACE},
-  {".", ".", 1.0, Copy, 0x002E, 0, 0x002E},
+  {".", ".", 1.0, Code, KEY_DOT},
   {"⏎", "⏎", 1.5, Code, KEY_ENTER, .scheme = 1},
   {"⌄", "⌄", 1.0, Hide, 0, .scheme = 1},
 
@@ -115,24 +121,24 @@ static struct key keys_numbers[] = {
   {"0", "0", 1.0, Code, KEY_0},
   {"", "", 0.0, EndRow},
 
-  {"-", "-", 1.0, Copy, 0x002D, 0, 0x002D},
-  {"/", "/", 1.0, Copy, 0x002F, 0, 0x002F},
-  {":", ":", 1.0, Copy, 0x003A, 0, 0x003A},
-  {";", ";", 1.0, Copy, 0x003B, 0, 0x003B},
-  {"(", "(", 1.0, Copy, 0x0028, 0, 0x0028},
-  {")", ")", 1.0, Copy, 0x0029, 0, 0x0029},
-  {"`", "`", 1.0, Copy, 0x0060, 0, 0x0060},
-  {"&", "&", 1.0, Copy, 0x0026, 0, 0x0026},
-  {"@", "@", 1.0, Copy, 0x0040, 0, 0x0040},
-  {"\"", "\"", 1.0, Copy, 0x0022, 0, 0x0022},
+  {"-", "-", 1.0, Code, KEY_MINUS},
+  {"/", "/", 1.0, Code, KEY_SLASH},
+  {":", ":", 1.0, Code, KEY_SEMICOLON, 0, Shift},
+  {";", ";", 1.0, Code, KEY_SEMICOLON},
+  {"(", "(", 1.0, Code, KEY_9, 0, Shift},
+  {")", ")", 1.0, Code, KEY_0, 0, Shift},
+  {"`", "`", 1.0, Code, KEY_GRAVE},
+  {"&", "&", 1.0, Code, KEY_7, 0, Shift},
+  {"@", "@", 1.0, Code, KEY_2, 0, Shift},
+  {"\"", "\"", 1.0, Code, KEY_APOSTROPHE, 0, Shift},
   {"", "", 0.0, EndRow},
 
   {"#+=", "#+=", 2.0, Layout, 0, &layouts[Symbols], .scheme = 1},
-  {".", ".", 1.2, Copy, 0x002E, 0, 0x002E},
-  {",", ",", 1.2, Copy, 0x002C, 0, 0x002C},
-  {"?", "?", 1.2, Copy, 0x003F, 0, 0x003F},
-  {"!", "!", 1.2, Copy, 0x0021, 0, 0x0021},
-  {"'", "'", 1.2, Copy, 0x0027, 0, 0x0027},
+  {".", ".", 1.2, Code, KEY_DOT},
+  {",", ",", 1.2, Code, KEY_COMMA},
+  {"?", "?", 1.2, Code, KEY_DOT, 0, Shift},
+  {"!", "!", 1.2, Code, KEY_1, 0, Shift},
+  {"'", "'", 1.2, Code, KEY_APOSTROPHE},
   {"⌫", "⌫", 2.0, Code, KEY_BACKSPACE, .scheme = 1},
   {"", "", 0.0, EndRow},
 
@@ -147,26 +153,26 @@ static struct key keys_numbers[] = {
 };
 
 static struct key keys_symbols[] = {
-  {"[", "[", 1.0, Copy, 0x005B, 0, 0x005B},
-  {"]", "]", 1.0, Copy, 0x005D, 0, 0x005D},
-  {"{", "{", 1.0, Copy, 0x007B, 0, 0x007B},
-  {"}", "}", 1.0, Copy, 0x007D, 0, 0x007D},
-  {"#", "#", 1.0, Copy, 0x0023, 0, 0x0023},
-  {"%", "%", 1.0, Copy, 0x0025, 0, 0x0025},
-  {"^", "^", 1.0, Copy, 0x005E, 0, 0x005E},
-  {"*", "*", 1.0, Copy, 0x002A, 0, 0x002A},
-  {"+", "+", 1.0, Copy, 0x002B, 0, 0x002B},
-  {"=", "=", 1.0, Copy, 0x003D, 0, 0x003D},
+  {"[", "[", 1.0, Code, KEY_LEFTBRACE},
+  {"]", "]", 1.0, Code, KEY_RIGHTBRACE},
+  {"{", "{", 1.0, Code, KEY_LEFTBRACE, 0, Shift},
+  {"}", "}", 1.0, Code, KEY_RIGHTBRACE, 0, Shift},
+  {"#", "#", 1.0, Code, KEY_3, 0, Shift},
+  {"%", "%", 1.0, Code, KEY_5, 0, Shift},
+  {"^", "^", 1.0, Code, KEY_6, 0, Shift},
+  {"*", "*", 1.0, Code, KEY_8, 0, Shift},
+  {"+", "+", 1.0, Code, KEY_EQUAL, 0, Shift},
+  {"=", "=", 1.0, Code, KEY_EQUAL},
   {"", "", 0.0, EndRow},
 
-  {"_", "_", 1.0, Copy, 0x005F, 0, 0x005F},
-  {"\\", "\\", 1.0, Copy, 0x005C, 0, 0x005C},
-  {"|", "|", 1.0, Copy, 0x007C, 0, 0x007C},
-  {"~", "~", 1.0, Copy, 0x007E, 0, 0x007E},
-  {"<", "<", 1.0, Copy, 0x003C, 0, 0x003C},
-  {">", ">", 1.0, Copy, 0x003E, 0, 0x003E},
+  {"_", "_", 1.0, Code, KEY_MINUS, 0, Shift},
+  {"\\", "\\", 1.0, Code, KEY_BACKSLASH},
+  {"|", "|", 1.0, Code, KEY_BACKSLASH, 0, Shift},
+  {"~", "~", 1.0, Code, KEY_GRAVE, 0, Shift},
+  {"<", "<", 1.0, Code, KEY_102ND},
+  {">", ">", 1.0, Code, KEY_102ND, 0, Shift},
   {"€", "€", 1.0, Copy, 0x20AC, 0, 0x20AC},
-  {"$", "$", 1.0, Copy, 0x0024, 0, 0x0024},
+  {"$", "$", 1.0, Code, KEY_4, 0, Shift},
   {"£", "£", 1.0, Copy, 0x00A3, 0, 0x00A3},
   {"•", "•", 1.0, Copy, 0x2022, 0, 0x2022},
   {"", "", 0.0, EndRow},

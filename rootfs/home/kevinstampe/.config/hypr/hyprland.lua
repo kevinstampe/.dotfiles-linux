@@ -315,8 +315,10 @@ hl.bind(mainMod .. " + I", hl.dsp.exec_cmd(terminal .. " --class=dev.tui.wlctl -
 hl.bind(mainMod .. " + U", hl.dsp.exec_cmd(terminal .. " --class=dev.tui.bluetui -e bluetui"))
 hl.bind(mainMod .. " + S", hl.dsp.exec_cmd(terminal .. " --class=dev.tui.wiremix -e wiremix"))
 
--- ROG side button: double-press to enter Steam Gaming Mode
-hl.bind("XF86Launch3", hl.dsp.exec_cmd("~/.local/bin/steam-hold"), { locked = true })
+-- ROG side button: 1 tap arms brightness mode (volume keys change brightness),
+-- 3 taps enter Steam Gaming Mode. The button cannot be held - the firmware
+-- sends press and release within ~1ms - so everything is tap counting.
+hl.bind("XF86Launch3", hl.dsp.exec_cmd("~/.local/bin/side-button"), { locked = true })
 
 hl.bind(ctrl .. " + " .. secMod .. " + Q", hl.dsp.exec_cmd("hyprlock"))
 
@@ -374,8 +376,8 @@ hl.bind(mainMod .. " + mouse:272", hl.dsp.window.drag(),   { mouse = true })
 hl.bind(mainMod .. " + mouse:273", hl.dsp.window.resize(), { mouse = true })
 
 -- Laptop multimedia keys
-hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+"), { locked = true, repeating = true })
-hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"),      { locked = true, repeating = true })
+hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("~/.local/bin/vol-or-bright up"),   { locked = true, repeating = true })
+hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("~/.local/bin/vol-or-bright down"), { locked = true, repeating = true })
 hl.bind("XF86AudioMute",        hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"),     { locked = true, repeating = true })
 hl.bind("XF86AudioMicMute",     hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"),   { locked = true, repeating = true })
 hl.bind("XF86MonBrightnessUp",  hl.dsp.exec_cmd("brightnessctl s +10%"),                           { locked = true, repeating = true })
