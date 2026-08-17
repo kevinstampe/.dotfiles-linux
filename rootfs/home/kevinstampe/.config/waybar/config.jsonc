@@ -74,7 +74,7 @@
   "custom/keyboard": {
     "format": "{}",
     "tooltip": false,
-    "exec": "if ~/.local/bin/osk-visible; then echo '{\"text\":\"󰌌\",\"class\":\"active\"}'; else echo '{\"text\":\"󰌌\",\"class\":\"inactive\"}'; fi",
+    "exec": "if [ \"$(hyprctl devices -j | jq '.touch | length')\" -eq 0 ]; then echo '{\"text\":\"\"}'; elif ~/.local/bin/osk-visible; then echo '{\"text\":\"󰌌\",\"class\":\"active\"}'; else echo '{\"text\":\"󰌌\",\"class\":\"inactive\"}'; fi",
     "return-type": "json",
     "interval": 1,
     "signal": 8,
