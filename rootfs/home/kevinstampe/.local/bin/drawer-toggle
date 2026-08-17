@@ -1,18 +1,39 @@
 #!/bin/sh
 # Toggle nwg-drawer from waybar.
 #
-# Must background the launch: waybar blocks its event loop on a foreground
-# child, which swallows the next click on the module.
+# The drawer runs resident (-r), started by drawer-daemon at Hyprland startup.
+# A cold start costs ~400 ms (scanning .desktop files, building the UI);
+# -open on a resident instance shows the prebuilt window in ~50 ms.
 #
-# -k is required: without it nwg-drawer takes an exclusive keyboard grab,
-# which makes waybar unclickable while the drawer is open.
+# Open/closed state is read from Hyprland's layer surfaces, not from a state
+# file: the drawer also closes itself when an app is launched or Esc is
+# pressed, and a state file would drift out of sync and eat the next click.
 #
-# NOTE: do not run a resident (-r) instance of nwg-drawer. This toggle decides
-# open vs close with pgrep, so a permanently-alive instance makes every click
-# read as "close".
+# NOTE: do not pass -wm hyprland (see drawer-daemon). That makes nwg-drawer
+# launch apps via "hyprctl dispatch exec <cmd>", which the Lua-based hyprland
+# config parses as Lua and rejects, so clicking an icon silently does nothing.
 
-if pgrep -x nwg-drawer >/dev/null; then
+if ! pgrep -x nwg-drawer >/dev/null; then
+    # Daemon not up yet (crashed, or toggle raced startup). Start it in the
+    # background -- waybar blocks its event loop on a foreground child -- then
+    # wait for it to come up before asking it to show.
+    "$HOME/.local/bin/drawer-daemon" >/dev/null 2>&1 &
+    # -open is ignored while the instance is still building its UI, so retry
+    # until the layer surface actually shows up.
+    i=0
+    while [ "$i" -lt 30 ]; do
+        if hyprctl layers -j | grep -q '"namespace": *"nwg-drawer"'; then
+            exit 0
+        fi
+        pgrep -x nwg-drawer >/dev/null && nwg-drawer -open >/dev/null 2>&1
+        i=$((i + 1))
+        sleep 0.1
+    done
+    exit 0
+fi
+
+if hyprctl layers -j | grep -q '"namespace": *"nwg-drawer"'; then
     nwg-drawer -close
 else
-    nwg-drawer -c 6 -is 96 -spacing 28 -term ghostty -fm thunar -wm hyprland -k &
+    nwg-drawer -open
 fi

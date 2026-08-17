@@ -16,9 +16,11 @@ local hpZ40 = "desc:HP Inc. HP Z40c G3 CN434615R"
 
 hl.monitor({ output = aorus, mode = "3840x2160@240", position = "2560x-1800", scale = 1 })
 hl.monitor({ output = hpZ40, mode = "5120x2160@60",  position = "2560x-1800", scale = 1 })
--- eDP-1 (laptop) placed to the LEFT of the external monitor.
--- logical width = 2560/1.6 = 1600; external left edge = x2560, so x = 2560-1600 = 960
-hl.monitor({ output = "eDP-1", mode = "2560x1600@180", position = "640x0", scale = 1.333333 })
+-- eDP-1 (laptop) placed to the LEFT of the external monitor, bottom edges aligned.
+-- logical size = 2560x1600 / 1.333333 = 1920x1200
+-- x: external left edge = 2560, so x = 2560-1920 = 640
+-- y: external bottom = -1800+2160 = 360, so y = 360-1200 = -840
+hl.monitor({ output = "eDP-1", mode = "2560x1600@180", position = "640x-840", scale = 1.333333 })
 
 --------------------
 ---- WORKSPACES ----
@@ -77,8 +79,9 @@ hl.plugin.hyprbars.add_button({
 local terminal    = "ghostty"
 local fileManager = "ghostty --class=dev.tui.yazi -e yazi"
 local menu        = "wofi -S drun -i"
--- App drawer: opened from the waybar button via ~/.local/bin/drawer-toggle,
--- which owns the nwg-drawer flags. Not run resident; see that script.
+-- App drawer: a resident nwg-drawer instance is started by ~/.local/bin/
+-- drawer-daemon (see AUTOSTART), which owns the flags. The waybar button runs
+-- ~/.local/bin/drawer-toggle, which only shows/hides that instance.
 
 -------------------
 ---- AUTOSTART ----
@@ -101,17 +104,21 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("~/.config/hypr/waybar-launch.sh")
     hl.exec_cmd("~/.config/hypr/autoreload-waybar.sh")
 
+    -- Resident app drawer, so the waybar button opens it in ~50 ms.
+    hl.exec_cmd("~/.local/bin/drawer-daemon")
+
     -- Keeps wvkbd running hidden, with --auto only while the folio is detached.
     hl.exec_cmd("~/.local/bin/osk-folio-watch")
 
     hl.exec_cmd("$HOME/.local/lib/import_env tmux")
     hl.exec_cmd("$HOME/.local/lib/import_env system")
-    hl.exec_cmd(btop_cmd, { workspace = "13 silent" })
     hl.exec_cmd("~/.config/hypr/lid-init.sh")
 end)
 
 hl.exec_cmd("~/.config/hypr/lid-init.sh")
 hl.exec_cmd("pacman -Qe > ~/dotfiles/installed-packages.txt")
+-- Runs on every config reload too, but btop-launch.sh is single-instance
+-- guarded, so a reload only respawns btop when no window is present.
 hl.exec_cmd(btop_cmd, { workspace = "13 silent" })
 
 -- React to monitor hotplug natively.
@@ -257,6 +264,7 @@ hl.config({
 
         touchpad = {
             natural_scroll = false,
+            disable_while_typing = true
         },
     },
 
@@ -438,6 +446,7 @@ hl.window_rule({
     name  = "outlook-ws10",
     match = { class = "^(chrome-faolnafnngnfdaknnbpnkhgohbobgegn-Default)$" },
     workspace = "10 silent",
+    ["hyprbars:no_bar"] = true,
 })
 
 -- teams on workspace 11
@@ -445,6 +454,7 @@ hl.window_rule({
     name  = "teams-ws11",
     match = { class = "^(chrome-ompifgpmddkgmclendfeacglnodjjndh-Default)$" },
     workspace = "11 silent",
+    ["hyprbars:no_bar"] = true,
 })
 
 -- tidal on workspace 12
@@ -457,7 +467,8 @@ hl.window_rule({
 -- btop
 hl.window_rule({
     name  = "btop",
-    match = { title = "^(btop)$" },
+    match = { class = "^(dev\\.tui\\.btop)$" },
+    ["hyprbars:no_bar"] = true,
     border_size = 0,
     monitor     = "eDP-1",
     workspace   = "13",
@@ -467,6 +478,7 @@ hl.window_rule({
 hl.window_rule({
     name  = "calculator-float",
     match = { class = "^(org.gnome.Calculator)$" },
+    ["hyprbars:no_bar"] = true,
     float = true,
     size  = "375 666",
 })
@@ -554,6 +566,41 @@ hl.window_rule({
     name = "Firefox kiosk as normal window",
     match = { class = "firefox" },
     fullscreen_state = "0 0"
+})
+
+-- No hyprbars title bar on apps that draw their own window controls.
+--
+-- NOTE: the plugin rule key is "hyprbars:no_bar", NOT the hyprlang spelling
+-- "plugin:hyprbars:no_bar" -- the lua parser strips the "plugin:" prefix and
+-- rejects the full name with "unknown field".
+hl.window_rule({
+    name   = "nobar-jetbrains-rider",
+    match  = { class = "^(jetbrains-rider)$" },
+    ["hyprbars:no_bar"] = true,
+})
+
+hl.window_rule({
+    name   = "nobar-chromium",
+    match  = { class = "^(chromium)$" },
+    ["hyprbars:no_bar"] = true,
+})
+
+hl.window_rule({
+    name   = "nobar-steam",
+    match  = { class = "^(steam)$" },
+    ["hyprbars:no_bar"] = true,
+})
+
+hl.window_rule({
+    name   = "nobar-bambustudio",
+    match  = { class = "^(BambuStudio)$" },
+    ["hyprbars:no_bar"] = true,
+})
+
+hl.window_rule({
+    name   = "nobar-vscode",
+    match  = { class = "^([Cc]ode)$" },
+    ["hyprbars:no_bar"] = true,
 })
 
 -----------------

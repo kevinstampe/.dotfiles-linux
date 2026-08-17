@@ -1,0 +1,18 @@
+#!/bin/sh
+# Start the resident nwg-drawer instance. Owns all drawer flags.
+#
+# Resident (-r) keeps the built UI in memory so drawer-toggle can show it in
+# ~50 ms instead of paying the ~400 ms cold start on every open.
+#
+# -k is required: without it nwg-drawer takes an exclusive keyboard grab,
+# which makes waybar unclickable while the drawer is open.
+#
+# NOTE: do not pass -wm hyprland. That makes nwg-drawer launch apps via
+# "hyprctl dispatch exec <cmd>", which the Lua-based hyprland config parses as
+# Lua and rejects ("attempt to perform arithmetic on a nil value (global
+# 'exec')"), so clicking an icon silently does nothing. Without -wm the drawer
+# forks the app itself.
+
+pgrep -x nwg-drawer >/dev/null && exit 0
+
+nwg-drawer -r -c 6 -is 96 -spacing 28 -term ghostty -fm thunar -k
