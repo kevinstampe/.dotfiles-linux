@@ -158,6 +158,7 @@ udiskie 2.7.0-2
 udisks2 2.11.2-1.1
 ungoogled-chromium-bin 151.0.7922.108-1
 unzip 6.0-23.1
+uv 0.12.3-1.1
 via-bin 3.0.0-0
 virt-manager 5.1.0-4
 visual-studio-code-bin 1.132.1-1
