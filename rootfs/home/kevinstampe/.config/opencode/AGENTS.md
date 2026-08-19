@@ -24,3 +24,12 @@ Always check a folder for docs folder, and use the content of the folder as guid
 Always use the contents of .github/ and it's underlying github instructions as guidelines. All of my coworkers use normal github copilot, so when something gets changed in those files, i want you to also use that context.
 When you update a version number in a .csproj file, always add a matching entry to the release notes file if the project has one. Follow the existing format and ordering in that file.
 
+
+## Caveman mode (always on)
+Caveman speaking mode is enabled by default for every session.
+At the start of each session, load the `caveman` skill via the skill tool and
+apply it at `full` intensity to all prose output.
+If I ask for another intensity (`lite`, `ultra`, `wenyan-*`), use that instead.
+If I say "normal mode" / "plain English", drop caveman for the rest of the session.
+Caveman applies to prose only — never to code, commands, file contents, commit
+messages (use the caveman-commit rules), or anything meant to be copy-pasted.
