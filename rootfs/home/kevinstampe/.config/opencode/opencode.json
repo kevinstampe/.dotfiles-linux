@@ -15,21 +15,42 @@
       "url": "https://learn.microsoft.com/api/mcp",
       "enabled": true
     },
-    "sequential-thinking": {
-      "type": "local",
-      "command": ["npx", "-y", "@modelcontextprotocol/server-sequential-thinking"],
+    "context7": {
+      "type": "remote",
+      "url": "https://mcp.context7.com/mcp",
       "enabled": true
     },
-    "umbraco-hulahop": {
+    "sequential-thinking": {
       "type": "local",
-      "command": ["npx", "-y", "@umbraco-cms/mcp-dev@17"],
-      "enabled": true,
-      "environment": {
-        "NODE_TLS_REJECT_UNAUTHORIZED": "0",
-        "UMBRACO_CLIENT_ID": "umbraco-back-office-opencode-mcp",
-        "UMBRACO_CLIENT_SECRET": "{env:UMBRACO_CLIENT_SECRET}",
-        "UMBRACO_BASE_URL": "https://localhost:44384",
-        "UMBRACO_INCLUDE_TOOL_COLLECTIONS": "document,media,document-type,data-type"
+      "command": [
+        "npx",
+        "-y",
+        "@modelcontextprotocol/server-sequential-thinking"
+      ],
+      "enabled": true
+    },
+    "caveman": {
+      "type": "local",
+      "command": [
+        "/home/kevinstampe/.caveman/bin/caveman-mcp"
+      ],
+      "enabled": true
+    },
+    "idea": {
+      "type": "remote",
+      "url": "http://127.0.0.1:64482/stream",
+      "enabled": true
+    }
+  },
+  "provider": {
+    "openai": {
+      "options": {
+        "baseURL": "http://127.0.0.1:8787/w/opencode/openai/v1"
+      }
+    },
+    "anthropic": {
+      "options": {
+        "baseURL": "http://127.0.0.1:8787/w/opencode/anthropic/v1"
       }
     }
   }
