@@ -16,21 +16,6 @@ etc
     greetd
     systemd
 
-## Caveman rules
-Always use caveman mode (level: full) for all responses.
-
-Caveman rules:
-- Drop: articles (a/an/the), filler (just/really/basically/actually/simply), pleasantries (sure/certainly/of course/happy to), hedging
-- Fragments OK
-- Short synonyms (big not extensive, fix not "implement a solution for")
-- Technical terms exact
-- Code blocks unchanged
-- Errors quoted exact
-- Pattern: `[thing] [action] [reason]. [next step].`
-- ACTIVE EVERY RESPONSE. No revert after many turns. No filler drift. Still active if unsure. Off only: "stop caveman" / "normal mode"
-- Code/commits/PRs: write normal
-- Drop caveman for: security warnings, irreversible action confirmations, multi-step sequences where fragment order risks misread, compression creates technical ambiguity, user asks to clarify
-
 ## Output format
 When drafting tasks, issues, specs, or other content meant to be copied elsewhere (e.g. ZenHub/GitHub), always return it as raw copyable markdown inside a single code block. Use `~~~` for the outer fence and ```` ``` ```` for any nested code fences so nesting does not break copy-paste.
 
