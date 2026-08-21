@@ -332,8 +332,7 @@ hl.bind("XF86Launch3", hl.dsp.exec_cmd("~/.local/bin/side-button"), { locked = t
 hl.bind(ctrl .. " + " .. secMod .. " + Q", hl.dsp.exec_cmd("hyprlock"))
 
 hl.bind("PRINT", hl.dsp.exec_cmd("hyprshot -m output --raw | swappy -f -"))
-hl.bind(mainMod .. " + PRINT", hl.dsp.exec_cmd("hyprshot -m active --raw | swappy -f -"))
-hl.bind(mainMod .. " + SHIFT + PRINT", hl.dsp.exec_cmd("hyprshot -m region --raw | swappy -f -"))
+hl.bind(mainMod .. " + PRINT", hl.dsp.exec_cmd("hyprshot -m region --raw | swappy -f -"))
 hl.bind(mainMod .. " + SHIFT + slash", hl.dsp.layout("togglesplit"))
 
 -- toggle on-screen keyboard (wvkbd)

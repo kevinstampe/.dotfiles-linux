@@ -124,7 +124,7 @@ qt5-tools 5.15.19+kde+r3-1.1
 qt5-wayland 5.15.19+kde+r55-1.1
 qt5ct 1.9-2.1
 qt6ct 0.11-7.1
-rider-local 2026.2.0.2-1
+rider-local 2026.2.1-1
 ripgrep 15.2.0-1
 rocm-smi-lib 7.2.0-2.1
 rog-control-center 6.3.11-1

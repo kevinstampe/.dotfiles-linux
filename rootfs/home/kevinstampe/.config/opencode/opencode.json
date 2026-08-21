@@ -1,5 +1,6 @@
 {
   "$schema": "https://opencode.ai/config.json",
+  "lsp": {},
   "mcp": {
     "github": {
       "type": "remote",
@@ -9,16 +10,6 @@
       "headers": {
         "Authorization": "Bearer {env:GITHUB_PAT}"
       }
-    },
-    "microsoft-learn": {
-      "type": "remote",
-      "url": "https://learn.microsoft.com/api/mcp",
-      "enabled": true
-    },
-    "context7": {
-      "type": "remote",
-      "url": "https://mcp.context7.com/mcp",
-      "enabled": true
     },
     "sequential-thinking": {
       "type": "local",
@@ -35,23 +26,6 @@
         "/home/kevinstampe/.caveman/bin/caveman-mcp"
       ],
       "enabled": true
-    },
-    "idea": {
-      "type": "remote",
-      "url": "http://127.0.0.1:64482/stream",
-      "enabled": true
-    }
-  },
-  "provider": {
-    "openai": {
-      "options": {
-        "baseURL": "http://127.0.0.1:8787/w/opencode/openai/v1"
-      }
-    },
-    "anthropic": {
-      "options": {
-        "baseURL": "http://127.0.0.1:8787/w/opencode/anthropic/v1"
-      }
     }
   }
 }
