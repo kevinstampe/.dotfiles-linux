@@ -1,0 +1,17 @@
+[Unit]
+Description=llama-swap - local LLM router (user instance)
+Documentation=https://github.com/mostlygeek/llama-swap
+After=graphical-session.target
+
+[Service]
+Type=simple
+# Runs as your user so it reuses ~/.cache/huggingface for -hf model pulls.
+# The packaged system unit uses DynamicUser and would re-download everything.
+ExecStart=/usr/bin/llama-swap -config %h/.config/llama-swap/config.yaml -watch-config -listen 127.0.0.1:9292
+Restart=on-failure
+RestartSec=3
+KillMode=mixed
+TimeoutStopSec=30
+
+[Install]
+WantedBy=default.target

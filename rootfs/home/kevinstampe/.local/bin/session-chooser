@@ -25,4 +25,27 @@ if [ -f "$FLAG" ]; then
     exec gamescope-session-plus steam
 fi
 
-exec start-hyprland
+# Hyprland logs to $XDG_RUNTIME_DIR/hypr/<sig>/hyprland.log, which is tmpfs and
+# is gone after a reboot - so when the compositor dies mid-session there is no
+# post-mortem left. Run it non-exec, record the exit status in the journal, and
+# archive the instance log under ~/.local/state/hypr/ so the last few sessions
+# can be inspected afterwards.
+RUNDIR="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/hypr"
+STATEDIR="$HOME/.local/state/hypr"
+mkdir -p "$STATEDIR"
+
+start-hyprland
+STATUS=$?
+
+LOG=$(find "$RUNDIR" -maxdepth 2 -name hyprland.log -printf '%T@ %p\n' 2>/dev/null \
+      | sort -rn | head -1 | cut -d' ' -f2-)
+STAMP=$(date +%Y%m%d-%H%M%S)
+if [ -n "$LOG" ]; then
+    cp -- "$LOG" "$STATEDIR/hyprland-$STAMP-exit$STATUS.log"
+fi
+# Keep the 10 most recent archives, drop the rest.
+ls -1t "$STATEDIR"/hyprland-*.log 2>/dev/null | tail -n +11 | xargs -r rm -f --
+
+logger -t hypr-session "Hyprland session exited with status $STATUS (log: $STATEDIR/hyprland-$STAMP-exit$STATUS.log)"
+
+exit "$STATUS"

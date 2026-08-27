@@ -13,9 +13,11 @@ end
 
 local aorus = "desc:GIGA-BYTE TECHNOLOGY CO. LTD. AORUS FO32U2 24080B003919"
 local hpZ40 = "desc:HP Inc. HP Z40c G3 CN434615R"
+local stueTv = "desc:Samsung Electric Company SAMSUNG 0x01000E00"
 
 hl.monitor({ output = aorus, mode = "3840x2160@240", position = "2560x-1800", scale = 1 })
 hl.monitor({ output = hpZ40, mode = "5120x2160@60",  position = "2560x-1800", scale = 1 })
+hl.monitor({ output = stueTv, mode = "3840x2160@120",  position = "auto", scale = 2 })
 -- eDP-1 (laptop) placed to the LEFT of the external monitor, bottom edges aligned.
 -- logical size = 2560x1600 / 1.333333 = 1920x1200
 -- x: external left edge = 2560, so x = 2560-1920 = 640
@@ -247,6 +249,21 @@ hl.config({
     },
 })
 
+-----------------
+----  DEBUG  ----
+-----------------
+
+-- Hyprland defaults to suppressing its own log lines, which left the log with
+-- nothing but aquamarine spam when the compositor died on 2026-08-25 - no
+-- shutdown reason, no crash context. Keep compositor logging on; the session
+-- log is archived by ~/.local/bin/session-chooser on exit.
+hl.config({
+    debug = {
+        disable_logs       = false,
+        enable_stdout_logs = false,
+    },
+})
+
 ---------------
 ---- INPUT ----
 ---------------
@@ -259,7 +276,9 @@ hl.config({
         kb_options = "",
         kb_rules   = "",
 
-        follow_mouse = 0,
+        follow_mouse = 1,
+        mouse_refocus = false,
+        float_switch_override_focus = 0,
         sensitivity  = 0,
 
         touchpad = {
@@ -554,12 +573,10 @@ hl.window_rule({
     no_max_size = true,
 })
 
--- JetBrains Rider (native Wayland) popups keep-alive. 
-hl.window_rule({
-    name  = "jetbrains-rider-popups",
-    match = { class = "^(jetbrains-rider)$", title = "^$" },
-    stay_focused = true,
-})
+-- JetBrains Rider (native Wayland) popups.
+-- NOTE: no stay_focused here on purpose -- it traps focus in the popup.
+-- the "popup closes on mouse move" problem is fixed by
+-- misc:mouse_move_focuses_monitor = false instead.
 
 -- firefox (windows avd)
  hl.window_rule({

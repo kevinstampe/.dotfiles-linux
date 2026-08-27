@@ -1,0 +1,105 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/mostlygeek/llama-swap/refs/heads/main/config-schema.json
+#
+# llama-swap config for Strix Halo (AMD Radeon 8060S, 64GiB dedicated VRAM)
+# Backend: llama.cpp-vulkan (RADV STRIX_HALO)
+#
+# VRAM budget (64GiB total):
+#   qwen3-8b        Q8_0   ~9GB weights + ~1GB KV   = ~10GB  (persistent)
+#   qwen3-coder     Q8_0  ~33GB weights + ~6GB KV   = ~39GB
+#   qwen3-coder-fast Q4   ~18GB weights + ~6GB KV   = ~24GB
+# Worst case concurrent: 10 + 39 = 49GB. Fits.
+
+healthCheckTimeout: 900
+logLevel: info
+logToStdout: "both"
+startPort: 10001
+globalTTL: 0
+sendLoadingState: true
+
+macros:
+  # Shared llama-server invocation. ${PORT} is assigned by llama-swap per model.
+  # -lm none replaces the deprecated --no-mmap (b10643+).
+  # --parallel 1: single slot. Default is 4, which lets concurrent requests
+  # fight over the GPU and collapses throughput (observed 0.19 tok/s under
+  # contention). One slot makes them queue instead.
+  "server": >
+    /usr/bin/llama-server
+    --host 127.0.0.1
+    --port ${PORT}
+    -ngl 99
+    -fa on
+    --jinja
+    -lm none
+    --parallel 1
+
+models:
+  "qwen3-coder":
+    name: "Qwen3 Coder 30B A3B (Q8_0)"
+    description: "Primary coding model. MoE, 3B active. Near-lossless quant."
+    cmd: |
+      ${server}
+      -hf unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF:Q8_0
+      --ctx-size 131072
+      --cache-type-k q8_0
+      --cache-type-v q8_0
+    ttl: 0
+    capabilities:
+      in: [text]
+      out: [text]
+      tools: true
+      context: 131072
+
+  "qwen3-coder-fast":
+    name: "Qwen3 Coder 30B A3B (UD-Q4_K_XL)"
+    description: "Same model at Q4. ~2x faster, lower tool-call fidelity."
+    cmd: |
+      ${server}
+      -hf unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF:UD-Q4_K_XL
+      --ctx-size 131072
+      --cache-type-k q8_0
+      --cache-type-v q8_0
+    ttl: 1800
+    capabilities:
+      in: [text]
+      out: [text]
+      tools: true
+      context: 131072
+
+  "qwen3-8b":
+    name: "Qwen3 8B (Q8_0)"
+    description: "Small model for titles and summarization. Kept resident."
+    cmd: |
+      ${server}
+      -hf unsloth/Qwen3-8B-GGUF:Q8_0
+      --ctx-size 16384
+    ttl: 0
+    capabilities:
+      in: [text]
+      out: [text]
+      tools: true
+      context: 16384
+
+routing:
+  router:
+    use: group
+    settings:
+      groups:
+        # Small model stays loaded forever. persistent:true means the coder
+        # group can never evict it, so opencode's summarization calls never
+        # trigger a 33GB reload.
+        "always":
+          persistent: true
+          swap: false
+          exclusive: false
+          members:
+            - "qwen3-8b"
+
+        # The two coder quants are mutually exclusive - loading one unloads
+        # the other. exclusive:true would also evict "always", but persistent
+        # protects it.
+        "coders":
+          swap: true
+          exclusive: true
+          members:
+            - "qwen3-coder"
+            - "qwen3-coder-fast"
