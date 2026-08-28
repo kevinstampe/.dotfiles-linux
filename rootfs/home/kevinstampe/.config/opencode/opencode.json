@@ -1,7 +1,7 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "model": "local/qwen3-coder",
-  "small_model": "local/qwen3-8b",
+  "model": "local/qwen3-coder-next",
+  "small_model": "local/qwen3-small",
   "provider": {
     "local": {
       "npm": "@ai-sdk/openai-compatible",
@@ -10,6 +10,15 @@
         "baseURL": "http://127.0.0.1:9292/v1"
       },
       "models": {
+        "qwen3-coder-next": {
+          "name": "Qwen3 Coder Next 80B A3B Q4_K_XL",
+          "tool_call": true,
+          "reasoning": false,
+          "limit": {
+            "context": 131072,
+            "output": 32768
+          }
+        },
         "qwen3-coder": {
           "name": "Qwen3 Coder 30B A3B Q8",
           "tool_call": true,
@@ -19,17 +28,8 @@
             "output": 32768
           }
         },
-        "qwen3-coder-fast": {
-          "name": "Qwen3 Coder 30B A3B Q4",
-          "tool_call": true,
-          "reasoning": false,
-          "limit": {
-            "context": 131072,
-            "output": 32768
-          }
-        },
-        "qwen3-8b": {
-          "name": "Qwen3 8B Q8",
+        "qwen3-small": {
+          "name": "Qwen3 4B Instruct 2507 Q8",
           "tool_call": true,
           "reasoning": false,
           "limit": {
@@ -42,15 +42,6 @@
   },
   "lsp": {},
   "mcp": {
-    "github": {
-      "type": "remote",
-      "url": "https://api.githubcopilot.com/mcp/",
-      "enabled": false,
-      "oauth": false,
-      "headers": {
-        "Authorization": "Bearer {env:GITHUB_PAT}"
-      }
-    },
     "sequential-thinking": {
       "type": "local",
       "command": [
@@ -58,14 +49,14 @@
         "-y",
         "@modelcontextprotocol/server-sequential-thinking"
       ],
-      "enabled": false
+      "enabled": true 
     },
     "caveman": {
       "type": "local",
       "command": [
         "/home/kevinstampe/.caveman/bin/caveman-mcp"
       ],
-      "enabled": false
+      "enabled": true
     }
   }
 }

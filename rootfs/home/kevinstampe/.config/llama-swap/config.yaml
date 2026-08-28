@@ -4,17 +4,47 @@
 # Backend: llama.cpp-vulkan (RADV STRIX_HALO)
 #
 # VRAM budget (64GiB total):
-#   qwen3-8b        Q8_0   ~9GB weights + ~1GB KV   = ~10GB  (persistent)
-#   qwen3-coder     Q8_0  ~33GB weights + ~6GB KV   = ~39GB
-#   qwen3-coder-fast Q4   ~18GB weights + ~6GB KV   = ~24GB
-# Worst case concurrent: 10 + 39 = 49GB. Fits.
+#   qwen3-small       Q8_0        ~4GB weights + ~1GB KV  = ~5GB  (persistent)
+#   qwen3-coder       Q8_0       ~33GB weights + ~6GB KV  = ~39GB
+#   qwen3-coder-next  UD-Q4_K_XL ~46GB weights + KV/bufs = ~51GB (measured)
+# small + coder:      ~44GB. Comfortable.
+# small + coder-next: 57.7GB of 64GB, +1.1GB GTT. ~7.8GB headroom.
+#
+# Q5_K_XL was measured here first: 60.7GB alone, 65.2GB with small (i.e. over
+# the 64GB heap, 3.1GB into GTT). It ran fine, and notably was NOT slower:
+#   Q5_K_XL  367.9 t/s prefill / 34.0 t/s gen  @34k prompt
+#   Q4_K_XL  369.4 t/s prefill / 34.8 t/s gen  @34k prompt
+# Identical within noise. So Q4 buys VRAM headroom, not speed - the expected
+# bandwidth win did not materialise at 3B active params. If headroom stops
+# mattering, Q5_K_XL is the better-quality choice at the same throughput.
+# Next's KV is small despite 131k ctx because only 12 of its 48 layers use real
+# attention; the other 36 are Gated DeltaNet with constant-size recurrent state.
+#
+# Measured on this box (bandwidth-bound, ~200GB/s effective):
+#   qwen3-coder  41.7 tok/s gen  (MoE, only ~3B active -> ~3.3GB swept/token)
+#   Qwen3-8B Q8  19.4 tok/s gen  (dense -> ~8.7GB swept/token, hence slower)
+# MoE beats dense here despite being 4x larger. Prefer MoE on this hardware.
+#
+# llama-bench, -fa on, Vulkan (2026-08-28):
+#             coder(Q8)   coder-next(Q5_K_XL)
+#   pp512       918 t/s        356 t/s
+#   pp4096      635 t/s        353 t/s
+#   pp16384     384 t/s        282 t/s
+#   pp32768     203 t/s        250 t/s   <- crossover ~28k
+#   tg128        52 t/s         40 t/s
+# coder wins short prompts; its prefill decays 4.5x from 512->32k (quadratic
+# attention). Next decays only 1.4x (linear attention) and wins past ~28k,
+# which is where real agentic sessions live.
 
 healthCheckTimeout: 900
 logLevel: info
 logToStdout: "both"
 startPort: 10001
 globalTTL: 0
-sendLoadingState: true
+# sendLoadingState injects synthetic chunks into the SSE `reasoning` field while
+# a model loads. Non-standard, and opencode's @ai-sdk/openai-compatible provider
+# appears to hang on it. Left off deliberately - do not re-enable.
+sendLoadingState: false
 
 macros:
   # Shared llama-server invocation. ${PORT} is assigned by llama-swap per model.
@@ -49,28 +79,51 @@ models:
       tools: true
       context: 131072
 
-  "qwen3-coder-fast":
-    name: "Qwen3 Coder 30B A3B (UD-Q4_K_XL)"
-    description: "Same model at Q4. ~2x faster, lower tool-call fidelity."
+  "qwen3-coder-next":
+    name: "Qwen3 Coder Next 80B A3B (UD-Q4_K_XL)"
+    description: "Agentic coding model. Hybrid Gated DeltaNet + MoE, 3B active of 80B total."
+    # Sampling defaults differ from qwen3-coder and MUST be set here: Qwen
+    # specifies temp=1.0 top_p=0.95 top_k=40 for Coder-Next, vs 0.7/0.8/20 for
+    # Coder-30B. Running Next with the 30B's settings degrades it noticeably.
+    # These are server-side defaults only; a client that sends its own sampling
+    # params still overrides them.
+    #
+    # --cache-reuse 256: reuse KV prefix chunks across requests via KV shifting.
+    # Agentic loops resend a near-identical growing prompt every turn, so this
+    # skips most of the reprefill.
+    #
+    # --no-context-shift: on overflow, fail loudly instead of silently evicting
+    # the oldest tokens. Silent eviction corrupts tool-call history mid-task.
+    # opencode compacts before 131072, so this should never trigger.
+    #
+    # Local file, not -hf: lives outside the HF cache. Single file, no shards.
     cmd: |
       ${server}
-      -hf unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF:UD-Q4_K_XL
+      -m /home/kevinstampe/models/Qwen3-Coder-Next-UD-Q4_K_XL/Qwen3-Coder-Next-UD-Q4_K_XL.gguf
       --ctx-size 131072
       --cache-type-k q8_0
       --cache-type-v q8_0
-    ttl: 1800
+      --temp 1.0
+      --top-p 0.95
+      --top-k 40
+      --cache-reuse 256
+      --no-context-shift
+    ttl: 0
     capabilities:
       in: [text]
       out: [text]
       tools: true
       context: 131072
 
-  "qwen3-8b":
-    name: "Qwen3 8B (Q8_0)"
+  "qwen3-small":
+    name: "Qwen3 4B Instruct 2507 (Q8_0)"
     description: "Small model for titles and summarization. Kept resident."
+    # Instruct-2507 variant is non-thinking by design, unlike the hybrid
+    # Qwen3-8B which burned its whole budget on reasoning_content and returned
+    # empty content. No --reasoning-budget workaround needed here.
     cmd: |
       ${server}
-      -hf unsloth/Qwen3-8B-GGUF:Q8_0
+      -hf unsloth/Qwen3-4B-Instruct-2507-GGUF:Q8_0
       --ctx-size 16384
     ttl: 0
     capabilities:
@@ -92,14 +145,13 @@ routing:
           swap: false
           exclusive: false
           members:
-            - "qwen3-8b"
+            - "qwen3-small"
 
-        # The two coder quants are mutually exclusive - loading one unloads
-        # the other. exclusive:true would also evict "always", but persistent
-        # protects it.
+        # Coder runs alone in its group. exclusive:true would also evict
+        # "always", but persistent protects it.
         "coders":
           swap: true
           exclusive: true
           members:
             - "qwen3-coder"
-            - "qwen3-coder-fast"
+            - "qwen3-coder-next"
