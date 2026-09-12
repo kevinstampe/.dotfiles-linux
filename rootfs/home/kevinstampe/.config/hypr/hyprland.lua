@@ -35,44 +35,50 @@ hl.monitor({ output = "eDP-1", mode = "2560x1600@180", position = "640x-840", sc
 -- hyprbars: per-window title bar with tappable buttons (touch-friendly window
 -- controls). Installed from the AUR package hyprland-plugin-hyprbars, which is
 -- version-locked to the running Hyprland - it must be reinstalled after every
--- Hyprland update or the plugin will refuse to load.
-
-hl.plugin.load("/usr/lib/libhyprbars.so")
-
--- Colours mirror waybar (see ~/.config/waybar/style.css): opaque black bar,
--- @overlay0 (#aaaaaa) text, @overlay1 (#888888) accents.
-hl.config({
-    plugin = {
-        hyprbars = {
-            bar_height                 = 26,
-            bar_padding                = 10,
-            bar_button_padding         = 8,
-            bar_color                  = "rgba(000000ff)",
-            ["col.text"]               = "rgb(aaaaaa)",
-            bar_text_font              = "JetBrainsMono Nerd Font",
-            bar_text_size              = 11,
-            bar_text_align             = "center",
-            bar_buttons_alignment      = "right",
-            bar_part_of_window         = true,
-            bar_precedence_over_border = true,
-        },
-    },
-})
-
--- Buttons render right-to-left in the order they are added.
--- NOTE: `action` must be a shell command string (not an hl.dsp dispatcher),
--- so window actions have to go back out through hyprctl.
+-- Hyprland update (`paru -S --rebuild hyprland-plugin-hyprbars`) or the plugin
+-- will refuse to load with "[hb] Version mismatch".
 --
--- Deliberately no fullscreen button: hyprbars does not draw on fullscreen
--- windows and waybar sits on the `top` layer (below fullscreen), so there
--- would be no way to leave fullscreen without a keyboard.
-hl.plugin.hyprbars.add_button({
-    bg_color = "rgb(cc241d)",
-    fg_color = "rgb(000000)",
-    size     = 12,
-    icon     = "",
-    action   = "hyprctl dispatch 'hl.dsp.window.close()'",
-})
+-- The whole block is guarded: a failed load must only cost the title bars, not
+-- abort the remaining ~550 lines of this config.
+
+local hyprbarsLoaded = pcall(hl.plugin.load, "/usr/lib/libhyprbars.so")
+
+if hyprbarsLoaded and hl.plugin.hyprbars then
+    -- Colours mirror waybar (see ~/.config/waybar/style.css): opaque black bar,
+    -- @overlay0 (#aaaaaa) text, @overlay1 (#888888) accents.
+    hl.config({
+        plugin = {
+            hyprbars = {
+                bar_height                 = 26,
+                bar_padding                = 10,
+                bar_button_padding         = 8,
+                bar_color                  = "rgba(000000ff)",
+                ["col.text"]               = "rgb(aaaaaa)",
+                bar_text_font              = "JetBrainsMono Nerd Font",
+                bar_text_size              = 11,
+                bar_text_align             = "center",
+                bar_buttons_alignment      = "right",
+                bar_part_of_window         = true,
+                bar_precedence_over_border = true,
+            },
+        },
+    })
+
+    -- Buttons render right-to-left in the order they are added.
+    -- NOTE: `action` must be a shell command string (not an hl.dsp dispatcher),
+    -- so window actions have to go back out through hyprctl.
+    --
+    -- Deliberately no fullscreen button: hyprbars does not draw on fullscreen
+    -- windows and waybar sits on the `top` layer (below fullscreen), so there
+    -- would be no way to leave fullscreen without a keyboard.
+    hl.plugin.hyprbars.add_button({
+        bg_color = "rgb(cc241d)",
+        fg_color = "rgb(000000)",
+        size     = 12,
+        icon     = "",
+        action   = "hyprctl dispatch 'hl.dsp.window.close()'",
+    })
+end
 
 ---------------------
 ---- MY PROGRAMS ----
