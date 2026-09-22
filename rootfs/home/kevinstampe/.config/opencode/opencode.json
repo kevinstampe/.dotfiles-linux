@@ -3,6 +3,42 @@
   "model": "github-copilot/claude-opus-5",
   "small_model": "github-copilot/gpt-5-mini",
   "provider": {
+    "omniroute": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "OmniRoute",
+      "options": {
+        "baseURL": "http://127.0.0.1:20128/v1",
+        "apiKey": "{env:OMNIROUTE_API_KEY}"
+      },
+      "models": {
+        "auto": {
+          "name": "Auto (router)",
+          "tool_call": true,
+          "limit": { "context": 200000, "output": 32768 }
+        },
+        "auto/coding": {
+          "name": "Auto: Coding",
+          "tool_call": true,
+          "limit": { "context": 200000, "output": 32768 }
+        },
+        "auto/best-coding": {
+          "name": "Auto: Best Coding",
+          "tool_call": true,
+          "limit": { "context": 200000, "output": 32768 }
+        },
+        "auto/reasoning": {
+          "name": "Auto: Reasoning",
+          "tool_call": true,
+          "reasoning": true,
+          "limit": { "context": 200000, "output": 32768 }
+        },
+        "auto/fast": {
+          "name": "Auto: Fast",
+          "tool_call": true,
+          "limit": { "context": 200000, "output": 32768 }
+        }
+      }
+    },
     "local": {
       "npm": "@ai-sdk/openai-compatible",
       "name": "Local (llama-swap)",
@@ -14,6 +50,33 @@
           "name": "Qwen3 Coder Next 80B A3B Q4_K_XL",
           "tool_call": true,
           "reasoning": false,
+          "limit": {
+            "context": 131072,
+            "output": 32768
+          }
+        },
+        "ornith-1.5": {
+          "name": "Ornith 1.5 35B A3B Q4_K_M",
+          "tool_call": true,
+          "reasoning": true,
+          "limit": {
+            "context": 131072,
+            "output": 32768
+          }
+        },
+        "ornith-1.5-q8": {
+          "name": "Ornith 1.5 35B A3B Q8",
+          "tool_call": true,
+          "reasoning": true,
+          "limit": {
+            "context": 131072,
+            "output": 32768
+          }
+        },
+        "glm-4.7-flash": {
+          "name": "GLM-4.7-Flash 30B A3B Q4_K_XL",
+          "tool_call": true,
+          "reasoning": true,
           "limit": {
             "context": 131072,
             "output": 32768

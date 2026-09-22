@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<!--
+  Per-app Mesa workarounds.
+
+  BambuStudio (AppImage, wxWidgets GL under Xwayland) wedged the amdgpu GFX
+  ring on 2026-09-16: [gfxhub] page fault from its GL context, then
+  "ring gfx_0.0.0 timeout" -> ring reset -> Xwayland SIGABRT, killing every
+  X11 client and freezing the session.
+
+  - mesa_glthread_app_profile=0 : opt out of glthread for this app
+  - radeonsi_zerovram=true      : zero VRAM allocations, avoids faults from
+                                  reads of uninitialized buffers
+-->
+<driconf>
+    <device driver="radeonsi">
+        <application name="BambuStudio" executable="bambustu_main">
+            <option name="mesa_glthread_app_profile" value="0" />
+            <option name="radeonsi_zerovram" value="true" />
+        </application>
+        <application name="BambuStudio (launcher)" executable="bambustudio">
+            <option name="mesa_glthread_app_profile" value="0" />
+            <option name="radeonsi_zerovram" value="true" />
+        </application>
+    </device>
+</driconf>

@@ -115,6 +115,103 @@ models:
       tools: true
       context: 131072
 
+  "glm-4.7-flash":
+    name: "GLM-4.7-Flash 30B A3B (UD-Q4_K_XL)"
+    description: "Thinking coding model. MoE, 3B active of 30B total. Same quant tier as coder-next at 1/3 the weights."
+    # llama-bench, Vulkan, -ngl 99 (2026-08-28), vs coder-next at same quant:
+    #   pp512  711 t/s  (coder-next 355)
+    #   tg128   56 t/s  (coder-next  40)
+    # 16.3GiB weights vs 46.2GiB. Both 3B active, so the win is purely the
+    # smaller total sweep per token on this bandwidth-bound box.
+    #
+    # Z.ai's recommended sampling: temp 1.0 / top-p 0.95 general, but
+    # temp 0.7 / top-p 1.0 for tool calling. opencode is tool-call-heavy,
+    # so the tool-calling profile is the right default here.
+    #
+    # Thinking model: emits reasoning into reasoning_content via --jinja's
+    # chat template. Kept at full 131072 ctx since thinking eats output budget.
+    cmd: |
+      ${server}
+      -m /home/kevinstampe/models/GLM-4.7-Flash-UD-Q4_K_XL/GLM-4.7-Flash-UD-Q4_K_XL.gguf
+      --ctx-size 131072
+      --cache-type-k q8_0
+      --cache-type-v q8_0
+      --temp 0.7
+      --top-p 1.0
+      --cache-reuse 256
+      --no-context-shift
+    ttl: 0
+    capabilities:
+      in: [text]
+      out: [text]
+      tools: true
+      context: 131072
+
+  "ornith-1.5":
+    name: "Ornith 1.5 35B A3B (Q4_K_M)"
+    description: "Agentic coding model. qwen35moe arch, hybrid linear/full attention (1 full layer per 4), 3B active of 35B total."
+    # llama-bench, Vulkan, -ngl 99 (2026-08-28), all at ~Q4:
+    #             ornith    glm-4.7-flash   coder-next
+    #   pp512    688 t/s        711 t/s       355 t/s
+    #   tg128     60 t/s         56 t/s        40 t/s
+    # 20.2GiB weights. Fastest generation of the three despite being larger
+    # than GLM - 8 of 256 experts active, and only 10 of 40 layers do full
+    # attention, so both the sweep and the KV traffic stay small.
+    #
+    # Upstream recommends temp 0.6 / top-p 0.95 / top-k 20 for general use
+    # (temp 1.0 only to reproduce their published benchmark numbers).
+    #
+    # Native context is 262144, but capped at 131072 here to match the other
+    # coders and keep KV inside the VRAM budget. Upstream's YaRN 4x extension
+    # is not enabled - unnecessary below the native window.
+    #
+    # The GGUF repo also ships an mmproj (vision). Not wired up: opencode's
+    # local provider is configured text-only.
+    cmd: |
+      ${server}
+      -m /home/kevinstampe/models/Ornith-1.5-35B-A3B-Q4_K_M/Ornith-1.5-35B-Q4_K_M.gguf
+      --ctx-size 131072
+      --cache-type-k q8_0
+      --cache-type-v q8_0
+      --temp 0.6
+      --top-p 0.95
+      --top-k 20
+      --cache-reuse 256
+      --no-context-shift
+    ttl: 0
+    capabilities:
+      in: [text]
+      out: [text]
+      tools: true
+      context: 131072
+
+  "ornith-1.5-q8":
+    name: "Ornith 1.5 35B A3B (Q8_0)"
+    description: "Same model as ornith-1.5, near-lossless quant. 36GiB weights vs 20GiB."
+    # Sampling, context and cache settings are deliberately identical to the
+    # Q4_K_M entry so the two are directly comparable - only the weights differ.
+    # 36GiB weights + ~6GiB KV = ~42GiB, plus the 5GiB persistent small model.
+    # Fits the 64GiB budget with room, unlike qwen3-coder-next (~51GiB).
+    # Expect lower tg than Q4 on this bandwidth-bound box: ~1.8x the bytes
+    # swept per token.
+    cmd: |
+      ${server}
+      -m /home/kevinstampe/models/Ornith-1.5-35B-A3B-Q8_0/Ornith-1.5-35B-Q8_0.gguf
+      --ctx-size 131072
+      --cache-type-k q8_0
+      --cache-type-v q8_0
+      --temp 0.6
+      --top-p 0.95
+      --top-k 20
+      --cache-reuse 256
+      --no-context-shift
+    ttl: 0
+    capabilities:
+      in: [text]
+      out: [text]
+      tools: true
+      context: 131072
+
   "qwen3-small":
     name: "Qwen3 4B Instruct 2507 (Q8_0)"
     description: "Small model for titles and summarization. Kept resident."
@@ -155,3 +252,6 @@ routing:
           members:
             - "qwen3-coder"
             - "qwen3-coder-next"
+            - "glm-4.7-flash"
+            - "ornith-1.5"
+            - "ornith-1.5-q8"

@@ -10,6 +10,8 @@ export SSL_CERT_DIR="$HOME/.aspnet/dev-certs/trust:/etc/ssl/certs"
 export FunctionAppHostPath="$HOME/.npm_packages/lib/node_modules/azure-functions-core-tools/bin/func.dll"
 export DotnetExecutablePath="$DOTNET_ROOT/dotnet"
 
+alias yay=paru
+
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time Oh My Zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
@@ -201,3 +203,8 @@ export PATH=/home/kevinstampe/.opencode/bin:$PATH
 
 # local secrets (not tracked in dotfiles)
 [[ -f "$HOME/.config/zsh/secrets.zsh" ]] && source "$HOME/.config/zsh/secrets.zsh"
+
+# shift+enter -> literal newline (CSI 13;2u from extended keys)
+_zsh_shift_enter_newline() { LBUFFER+=$'\n' }
+zle -N _zsh_shift_enter_newline
+bindkey '^[[13;2u' _zsh_shift_enter_newline

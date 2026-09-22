@@ -100,6 +100,11 @@ local menu        = "wofi -S drun -i"
 local btop_cmd = "~/.config/hypr/btop-launch.sh"
 
 hl.on("hyprland.start", function()
+    -- Notification daemon must own org.freedesktop.Notifications BEFORE the
+    -- browsers start, otherwise Chromium/PWAs draw their own toplevel windows
+    -- (which dwindle then tiles) instead of sending notifications over dbus.
+    hl.exec_cmd("swaync")
+
     hl.exec_cmd("hypridle & hyprpaper & hyprlock")
     hl.exec_cmd("wl-clip-persist --clipboard regular")
     hl.exec_cmd("systemctl --user start hyprpolkitagent")
@@ -334,13 +339,13 @@ local ctrl    = "CTRL"
 
 hl.bind(mainMod .. " + C", hl.dsp.exec_cmd(terminal))
 hl.bind(mainMod .. " + Q", hl.dsp.window.close())
-hl.bind(mainMod .. " + M", hl.dsp.exit())
 hl.bind(mainMod .. " + E", hl.dsp.exec_cmd(fileManager))
 hl.bind(mainMod .. " + SHIFT + E", hl.dsp.exec_cmd("thunar"))
 hl.bind(mainMod .. " + F", hl.dsp.window.fullscreen())
 hl.bind(mainMod .. " + space", hl.dsp.exec_cmd(menu))
 hl.bind(mainMod .. " + end", hl.dsp.exec_cmd(menu))
-hl.bind(mainMod .. " + P", hl.dsp.exec_cmd("hyprctl reload"))
+hl.bind(mainMod .. " + apostrophe", hl.dsp.exec_cmd("hyprctl reload"))
+hl.bind(mainMod .. " + SHIFT + apostrophe", hl.dsp.exit())
 hl.bind(mainMod .. " + B", hl.dsp.exec_cmd("chromium"))
 hl.bind(mainMod .. " + R", hl.dsp.exec_cmd("rider"))
 
