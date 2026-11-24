@@ -1,2 +1,3 @@
 # caveman-generated opencode plugins (created by `caveman enable/hooks install opencode`)
 rootfs/home/kevinstampe/.config/opencode/plugins/caveman-*.js
+__pycache__/

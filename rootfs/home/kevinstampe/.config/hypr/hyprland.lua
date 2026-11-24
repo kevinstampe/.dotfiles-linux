@@ -29,57 +29,6 @@ hl.monitor({ output = "eDP-1", mode = "2560x1600@180", position = "640x-840", sc
 --------------------
 -- See https://wiki.hypr.land/Configuring/Basics/Workspace-Rules/
 
------------------
----- PLUGINS ----
------------------
--- hyprbars: per-window title bar with tappable buttons (touch-friendly window
--- controls). Installed from the AUR package hyprland-plugin-hyprbars, which is
--- version-locked to the running Hyprland - it must be reinstalled after every
--- Hyprland update (`paru -S --rebuild hyprland-plugin-hyprbars`) or the plugin
--- will refuse to load with "[hb] Version mismatch".
---
--- The whole block is guarded: a failed load must only cost the title bars, not
--- abort the remaining ~550 lines of this config.
-
-local hyprbarsLoaded = pcall(hl.plugin.load, "/usr/lib/libhyprbars.so")
-
-if hyprbarsLoaded and hl.plugin.hyprbars then
-    -- Colours mirror waybar (see ~/.config/waybar/style.css): opaque black bar,
-    -- @overlay0 (#aaaaaa) text, @overlay1 (#888888) accents.
-    hl.config({
-        plugin = {
-            hyprbars = {
-                bar_height                 = 26,
-                bar_padding                = 10,
-                bar_button_padding         = 8,
-                bar_color                  = "rgba(000000ff)",
-                ["col.text"]               = "rgb(aaaaaa)",
-                bar_text_font              = "JetBrainsMono Nerd Font",
-                bar_text_size              = 11,
-                bar_text_align             = "center",
-                bar_buttons_alignment      = "right",
-                bar_part_of_window         = true,
-                bar_precedence_over_border = true,
-            },
-        },
-    })
-
-    -- Buttons render right-to-left in the order they are added.
-    -- NOTE: `action` must be a shell command string (not an hl.dsp dispatcher),
-    -- so window actions have to go back out through hyprctl.
-    --
-    -- Deliberately no fullscreen button: hyprbars does not draw on fullscreen
-    -- windows and waybar sits on the `top` layer (below fullscreen), so there
-    -- would be no way to leave fullscreen without a keyboard.
-    hl.plugin.hyprbars.add_button({
-        bg_color = "rgb(cc241d)",
-        fg_color = "rgb(000000)",
-        size     = 12,
-        icon     = "",
-        action   = "hyprctl dispatch 'hl.dsp.window.close()'",
-    })
-end
-
 ---------------------
 ---- MY PROGRAMS ----
 ---------------------
@@ -110,6 +59,9 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("systemctl --user start hyprpolkitagent")
     hl.exec_cmd("udiskie -aTN")
 
+    -- Warm up the opencode background server so the TUI attaches instantly.
+    hl.exec_cmd("opencode service start")
+
     hl.exec_cmd("chromium", { workspace = "1" })
     hl.exec_cmd("gtk-launch chrome-faolnafnngnfdaknnbpnkhgohbobgegn-Default.desktop", { workspace = "10 silent" })
     hl.exec_cmd("gtk-launch chrome-ompifgpmddkgmclendfeacglnodjjndh-Default.desktop", { workspace = "11 silent" })
@@ -126,13 +78,17 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("$HOME/.local/lib/import_env tmux")
     hl.exec_cmd("$HOME/.local/lib/import_env system")
     hl.exec_cmd("~/.config/hypr/lid-init.sh")
+    hl.exec_cmd(btop_cmd, { workspace = "13 silent" })
 end)
 
 hl.exec_cmd("~/.config/hypr/lid-init.sh")
 hl.exec_cmd("pacman -Qe > ~/dotfiles/installed-packages.txt")
--- Runs on every config reload too, but btop-launch.sh is single-instance
--- guarded, so a reload only respawns btop when no window is present.
-hl.exec_cmd(btop_cmd, { workspace = "13 silent" })
+-- Top-level exec runs during the initial parse, before ghostty can open a
+-- window, so btop is launched from hyprland.start and respawned on reload.
+-- btop-launch.sh is single-instance guarded, so reloads won't duplicate it.
+hl.on("config.reloaded", function()
+    hl.exec_cmd(btop_cmd, { workspace = "13 silent" })
+end)
 
 -- React to monitor hotplug natively.
 -- lid-init.sh reassigns workspaces per monitor and re-evaluates waybar output.
@@ -150,6 +106,8 @@ hl.env("ELECTRON_OZONE_PLATFORM_HINT", "wayland")
 hl.env("XDG_CURRENT_DESKTOP", "Hyprland")
 hl.env("XDG_SESSION_TYPE", "wayland")
 hl.env("MOZ_ENABLE_WAYLAND", "1")
+-- .NET on Linux trusts only the first CN=localhost cert it finds: TestCommon Azurite cert must come before the ASP.NET dev cert.
+hl.env("SSL_CERT_DIR", os.getenv("HOME") .. "/.local/share/test-common-trust:" .. os.getenv("HOME") .. "/.aspnet/dev-certs/trust:/etc/ssl/certs")
 hl.env("OZONE_PLATFORM", "wayland")
 
 -----------------------
@@ -237,7 +195,7 @@ hl.animation({ leaf = "workspacesOut", enabled = true, speed = 1.94, bezier = "a
 hl.config({
     dwindle = {
         preserve_split         = true,
-        split_width_multiplier = 0,
+        split_width_multiplier = 1.0,
     },
 
     master = {
@@ -257,6 +215,13 @@ hl.config({
         disable_hyprland_logo    = true,
         disable_splash_rendering = true,
         background_color         = "rgba(000000ff)",
+    },
+})
+
+-- Don't auto-switch the monitor to HDR when a fullscreen app requests it.
+hl.config({
+    render = {
+        cm_auto_hdr = 0,
     },
 })
 
@@ -287,7 +252,7 @@ hl.config({
         kb_options = "",
         kb_rules   = "",
 
-        follow_mouse = 1,
+        follow_mouse = 0,
         mouse_refocus = false,
         float_switch_override_focus = 0,
         sensitivity  = 0,
@@ -347,7 +312,6 @@ hl.bind(mainMod .. " + end", hl.dsp.exec_cmd(menu))
 hl.bind(mainMod .. " + apostrophe", hl.dsp.exec_cmd("hyprctl reload"))
 hl.bind(mainMod .. " + SHIFT + apostrophe", hl.dsp.exit())
 hl.bind(mainMod .. " + B", hl.dsp.exec_cmd("chromium"))
-hl.bind(mainMod .. " + R", hl.dsp.exec_cmd("rider"))
 
 -- wifi / bluetooth TUIs (float rules match on the --class app-id)
 hl.bind(mainMod .. " + I", hl.dsp.exec_cmd(terminal .. " --class=dev.tui.wlctl -e wlctl"))
@@ -476,7 +440,6 @@ hl.window_rule({
     name  = "outlook-ws10",
     match = { class = "^(chrome-faolnafnngnfdaknnbpnkhgohbobgegn-Default)$" },
     workspace = "10 silent",
-    ["hyprbars:no_bar"] = true,
 })
 
 -- teams on workspace 11
@@ -484,7 +447,6 @@ hl.window_rule({
     name  = "teams-ws11",
     match = { class = "^(chrome-ompifgpmddkgmclendfeacglnodjjndh-Default)$" },
     workspace = "11 silent",
-    ["hyprbars:no_bar"] = true,
 })
 
 -- tidal on workspace 12
@@ -498,7 +460,6 @@ hl.window_rule({
 hl.window_rule({
     name  = "btop",
     match = { class = "^(dev\\.tui\\.btop)$" },
-    ["hyprbars:no_bar"] = true,
     border_size = 0,
     monitor     = "eDP-1",
     workspace   = "13",
@@ -508,7 +469,6 @@ hl.window_rule({
 hl.window_rule({
     name  = "calculator-float",
     match = { class = "^(org.gnome.Calculator)$" },
-    ["hyprbars:no_bar"] = true,
     float = true,
     size  = "375 666",
 })
@@ -594,41 +554,6 @@ hl.window_rule({
     name = "Firefox kiosk as normal window",
     match = { class = "firefox" },
     fullscreen_state = "0 0"
-})
-
--- No hyprbars title bar on apps that draw their own window controls.
---
--- NOTE: the plugin rule key is "hyprbars:no_bar", NOT the hyprlang spelling
--- "plugin:hyprbars:no_bar" -- the lua parser strips the "plugin:" prefix and
--- rejects the full name with "unknown field".
-hl.window_rule({
-    name   = "nobar-jetbrains-rider",
-    match  = { class = "^(jetbrains-rider)$" },
-    ["hyprbars:no_bar"] = true,
-})
-
-hl.window_rule({
-    name   = "nobar-chromium",
-    match  = { class = "^(chromium)$" },
-    ["hyprbars:no_bar"] = true,
-})
-
-hl.window_rule({
-    name   = "nobar-steam",
-    match  = { class = "^(steam)$" },
-    ["hyprbars:no_bar"] = true,
-})
-
-hl.window_rule({
-    name   = "nobar-bambustudio",
-    match  = { class = "^(BambuStudio)$" },
-    ["hyprbars:no_bar"] = true,
-})
-
-hl.window_rule({
-    name   = "nobar-vscode",
-    match  = { class = "^([Cc]ode)$" },
-    ["hyprbars:no_bar"] = true,
 })
 
 -----------------

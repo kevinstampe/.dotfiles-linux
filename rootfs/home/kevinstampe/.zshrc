@@ -6,7 +6,7 @@ export ZSH="$HOME/.oh-my-zsh"
 export DOTNET_ROOT=$HOME/.dotnet
 export NPM_BIN=$HOME/.npm_packages/bin
 export PATH=$PATH:$DOTNET_ROOT:$DOTNET_ROOT/tools:$NPM_BIN
-export SSL_CERT_DIR="$HOME/.aspnet/dev-certs/trust:/etc/ssl/certs"
+export SSL_CERT_DIR="$HOME/.local/share/test-common-trust:$HOME/.aspnet/dev-certs/trust:/etc/ssl/certs"
 export FunctionAppHostPath="$HOME/.npm_packages/lib/node_modules/azure-functions-core-tools/bin/func.dll"
 export DotnetExecutablePath="$DOTNET_ROOT/dotnet"
 

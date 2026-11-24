@@ -5,5 +5,5 @@ Type=Application
 Name=Microsoft Teams (PWA)
 MimeType=x-scheme-handler/web+msteams;x-scheme-handler/chromium;
 Exec=chromium --profile-directory=Default --app-id=ompifgpmddkgmclendfeacglnodjjndh %U
-Icon=chrome-ompifgpmddkgmclendfeacglnodjjndh-Default
+Icon=/home/kevinstampe/.local/share/icons/hicolor/512x512/apps/chrome-ompifgpmddkgmclendfeacglnodjjndh-Default.png
 StartupWMClass=crx_ompifgpmddkgmclendfeacglnodjjndh
